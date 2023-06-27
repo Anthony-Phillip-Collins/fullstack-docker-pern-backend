@@ -1,0 +1,10 @@
+**/.git
+**/.svn
+**/.hg
+**/.html
+**/.vscode
+**/node_modules
+
+build
+.eslintrc.js
+.prettierrc.js

@@ -1,0 +1,32 @@
+FROM node:16.20.1-bullseye-slim as base
+
+ARG APP_PATH=/usr/src/app/
+
+RUN apt-get update
+RUN apt-get install -y dumb-init
+RUN echo ${APP_PATH}
+RUN mkdir -p $APP_PATH && chown -R node:node $APP_PATH
+
+WORKDIR $APP_PATH
+
+FROM base as build
+USER node
+COPY --chown=node:node ./package.json ./package-lock.json ./
+RUN npm install --silent
+COPY --chown=node:node . ./
+RUN node node_modules/typescript/bin/tsc
+
+FROM base as production
+# on heroku $APP_PATH no longer exists in this stage, so we need to recreate it
+ARG APP_PATH=/usr/src/app/
+WORKDIR $APP_PATH
+
+USER node
+COPY --from=build --chown=node:node $APP_PATH/build $APP_PATH/build
+COPY --chown=node:node ./package.json ./package-lock.json $APP_PATH
+RUN npm ci --only=production
+
+CMD ["dumb-init", "node", "build/index.js"]
+
+
+

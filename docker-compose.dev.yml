@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  dev.backend:
+    image: myapp.dev.backend
+    container_name: dev.backend
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+
+    # commented out ports because we are using nginx reverse proxy
+    # ports:
+    #   - 4000:4000
+
+    volumes:
+      - ./:/usr/src/app
+      - '/usr/src/app/node_modules'
+
+    env_file:
+      - ./.env.development
+  dev.debug-helper:
+    image: busybox
+    container_name: dev.debug-helper
