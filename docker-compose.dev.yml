@@ -9,8 +9,8 @@ services:
       dockerfile: Dockerfile.dev
 
     # commented out ports because we are using nginx reverse proxy
-    # ports:
-    #   - 4000:4000
+    ports:
+      - 4000:4000
 
     volumes:
       - ./:/usr/src/app

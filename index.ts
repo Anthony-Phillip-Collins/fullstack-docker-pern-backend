@@ -1,14 +1,13 @@
 import express from 'express';
 import { init } from './src/app';
-import constants, { DB } from './src/constants';
 import connectToMongo from './src/mongo';
-import logger from './src/utils/logger';
 import connectToPostgres from './src/sequelize';
+import logger from './src/utils/logger';
+import constants from './src/constants';
 
 const app = express();
-// init(app);
 
-if (constants.DB_TYPE === DB.MONGODB) {
+if (constants.IS_MONGODB) {
   connectToMongo()
     .then(() => {
       logger.info('Connected to MongoDB');
