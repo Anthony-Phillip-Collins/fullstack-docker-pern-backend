@@ -7,6 +7,8 @@ import constants from './src/constants';
 
 const app = express();
 
+console.log(process.env);
+
 if (constants.IS_MONGODB) {
   connectToMongo()
     .then(() => {
