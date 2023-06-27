@@ -14,6 +14,11 @@ Add Buildpack
 heroku buildpacks:set heroku/nodejs
 ```
 
+Add remote
+```
+git remote add heroku https://git.heroku.com/fullstack-docker-pern-backend.git
+```
+
 Push to heroku
 
 ```
