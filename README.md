@@ -1,5 +1,11 @@
 # Fullstack PERN - backend git submodule
 
+Clone parent repo and follow instructions to run the backend.
+
+```
+git clone https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern.git
+```
+
 # Heroku
 
 Create service
@@ -50,16 +56,4 @@ push changes
 
 ```
 git push heroku main
-```
-
-stop dyno
-
-```
-heroku ps:stop fullstack-docker-pern-backend
-```
-
-restart dyno
-
-```
-heroku ps:restart fullstack-docker-pern-backend
 ```

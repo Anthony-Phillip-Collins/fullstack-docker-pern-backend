@@ -9,6 +9,7 @@ import {
 import logger from '../utils/logger';
 import { blogModelInit } from './models/blog.model';
 
+// check if we are running on heroku (DYNO) otherwise local development
 const dialectOptions = process.env.DYNO
   ? {
       ssl: {
@@ -20,7 +21,6 @@ const dialectOptions = process.env.DYNO
 
 const authenticate = (): Promise<void> => {
   const sequelize = new Sequelize(process.env.DATABASE_URL || '', { dialectOptions });
-
   const models = [blogModelInit];
   models.forEach((model) => {
     model(sequelize);
