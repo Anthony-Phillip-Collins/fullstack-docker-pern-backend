@@ -20,7 +20,8 @@
     "docker:prod:build": "docker compose -f docker-compose.prod.yml up --build",
     "docker:prod:build:nc": "npm run docker:prod:build -- --no-cache",
     "docker:prod:up": "docker compose -f docker-compose.prod.yml up",
-    "docker:prod:down": "docker compose -f docker-compose.prod.yml down --remove-orphans"
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down --remove-orphans",
+    "docker:build": "docker compose -f docker-compose.prod.yml build"
   },
   "author": "Anthony Collins",
   "license": "ISC",

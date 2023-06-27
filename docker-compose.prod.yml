@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  backend:
+    image: fullstack-docker-pern-backend
+    container_name: fullstack-docker-pern-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
