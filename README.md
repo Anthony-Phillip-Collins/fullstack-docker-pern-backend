@@ -13,3 +13,9 @@ Add Buildpack
 ```
 heroku buildpacks:set heroku/nodejs
 ```
+
+Push to heroku
+
+```
+git push heroku main
+```
