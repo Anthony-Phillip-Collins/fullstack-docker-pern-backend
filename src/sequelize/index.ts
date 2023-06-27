@@ -9,17 +9,17 @@ import {
 import logger from '../utils/logger';
 import { blogModelInit } from './models/blog.model';
 
-console.log(process.env.DATABASE_URL);
+const dialectOptions = process.env.DYNO
+  ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    }
+  : {};
 
 const authenticate = (): Promise<void> => {
-  const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
-    dialectOptions: {
-      // ssl: {
-      //   require: true,
-      //   rejectUnauthorized: false,
-      // },
-    },
-  });
+  const sequelize = new Sequelize(process.env.DATABASE_URL || '', { dialectOptions });
 
   const models = [blogModelInit];
   models.forEach((model) => {
