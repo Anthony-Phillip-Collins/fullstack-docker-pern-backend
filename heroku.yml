@@ -1,6 +1,6 @@
 build:
   docker:
-    web: ./Dockerfile.prod
-release:
-  run:
-    web: dumb-init node build/index.js
+    web: Dockerfile.prod
+# release:
+#   run:
+#     web: dumb-init node build/index.js

@@ -27,6 +27,3 @@ COPY --chown=node:node ./package.json ./package-lock.json $APP_PATH
 RUN npm ci --only=production
 
 CMD ["dumb-init", "node", "build/index.js"]
-
-
-
