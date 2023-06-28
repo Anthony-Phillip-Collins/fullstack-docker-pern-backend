@@ -1,10 +1,15 @@
-# Fullstack Docker PERN - backend git submodule
+# Fullstack Docker PERN - backend
 
-Parent project: https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/
+This is a submodule of its parent project:  
+https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/
 
-To run the full project locally visit the parent project and follow the instructions of the [README.md](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/blob/main/README.md).
+## Local development
 
-# Heroku
+To run the full project locally visit the [parent project](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/) and follow the instructions of the [README.md](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/blob/main/README.md).
+
+## Deploy to Heroku
+
+Follow these steps to create an app on Heroku that serves the backend.
 
 1. Create an account with [Heroku](https://www.heroku.com) and log in via cli
 
