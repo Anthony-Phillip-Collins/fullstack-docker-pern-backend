@@ -1,7 +1,7 @@
 {
-  "name": "backend",
-  "version": "0.0.1",
-  "description": "boilerplate backend",
+  "name": "fullstack-docker-pern-backend",
+  "version": "1.1.1",
+  "description": "Submodule for the backend of the fullstack-docker-pern project",
   "main": "index.ts",
   "scripts": {
     "tsc": "tsc",
@@ -16,12 +16,7 @@
     "docker:dev:mongo": "docker exec -it dev.mongo mongosh admin -u root -p 'example'",
     "docker:dev:mongo:user": "docker exec -it dev.mongo mongosh -u the_username -p 'the_password' the_database",
     "docker:dev:ps": "docker compose -f docker-compose.dev.yml ps -a",
-    "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.app:4000",
-    "docker:prod:build": "docker compose -f docker-compose.prod.yml up --build",
-    "docker:prod:build:nc": "npm run docker:prod:build -- --no-cache",
-    "docker:prod:up": "docker compose -f docker-compose.prod.yml up",
-    "docker:prod:down": "docker compose -f docker-compose.prod.yml down --remove-orphans",
-    "docker:build": "docker compose -f docker-compose.prod.yml build"
+    "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.app:4000"
   },
   "author": "Anthony Collins",
   "license": "ISC",
