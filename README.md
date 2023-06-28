@@ -1,6 +1,6 @@
 # Fullstack PERN - backend git submodule
 
-Clone parent repo and follow instructions to run the backend.
+Clone parent repo and follow instructions to run the fullstack app.
 
 ```
 git clone https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern.git
@@ -20,7 +20,7 @@ Add Buildpack
 heroku buildpacks:set heroku/nodejs
 ```
 
-Add remote
+Add remote (should it not exist yet)
 
 ```
 git remote add heroku https://git.heroku.com/fullstack-docker-pern-backend.git
