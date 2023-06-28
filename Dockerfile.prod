@@ -24,6 +24,7 @@ WORKDIR $APP_PATH
 USER node
 COPY --from=build --chown=node:node $APP_PATH/build $APP_PATH/build
 COPY --chown=node:node ./package.json ./package-lock.json $APP_PATH
+ENV NODE_ENV=production
 RUN npm ci --only=production
 
 CMD ["dumb-init", "node", "build/index.js"]

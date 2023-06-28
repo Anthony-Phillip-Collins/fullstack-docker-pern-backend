@@ -1,59 +1,81 @@
-# Fullstack PERN - backend git submodule
+# Fullstack Docker PERN - backend git submodule
 
-Clone parent repo and follow instructions to run the fullstack app.
+Parent project: https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/
 
-```
-git clone https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern.git
-```
+To run the full project locally visit the parent project and follow the instructions of the [README.md](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/blob/main/README.md).
 
 # Heroku
 
-Create service
+1. Create an account with [Heroku](https://www.heroku.com) and log in via cli
 
 ```
-heroku create fullstack-docker-pern-backend
+$ heroku login
 ```
 
-Add Buildpack
+2. Create app
 
 ```
-heroku buildpacks:set heroku/nodejs
+$ heroku create appname
 ```
 
-Add remote (should it not exist yet)
+3. Create postgress database
 
 ```
-git remote add heroku https://git.heroku.com/fullstack-docker-pern-backend.git
+$ heroku addons:create heroku-postgresql:mini
 ```
 
-Push to heroku
+4. Use [psql](https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli) on the database server
 
 ```
-git push heroku main
+$ heroku pg:psql
 ```
 
-Container
+5. Create a table with an entry
 
-login
+```sql
+CREATE TABLE IF NOT EXISTS blogs (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    likes INTEGER NOT NULL
+);
 
-```
-heroku container:login
-```
-
-set stack to container
-
-```
-heroku stack:set container -a fullstack-docker-pern-backend
-```
-
-attach (existing) postgress addon to app
-
-```
-heroku addons:attach postgresql-slippery-61961 -a fullstack-docker-pern-backend
+INSERT INTO blogs (title, author, url, likes) VALUES ('Some Blog', 'Some Author', 'https://google.com/', 1);
 ```
 
-push changes
+6. Confirm the entry exists
+
+```sql
+SELECT * FROM blogs;
+```
+
+7. Exit database server
 
 ```
-git push heroku main
+\q
+```
+
+8. Set stack to container
+
+```
+$ heroku stack:set container -a appname
+```
+
+9. Open second terminal window for logging
+
+```
+$ heroku logs -t --app appname
+```
+
+10. Push to Heroku
+
+```
+$ git push heroku main
+```
+
+11. Open app
+
+```
+$ heroku open api/blogs
 ```
