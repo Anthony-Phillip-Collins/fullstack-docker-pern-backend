@@ -13,26 +13,26 @@ Follow these steps to create an app on Heroku that serves the backend.
 
 1. Create an account with [Heroku](https://www.heroku.com) and log in via cli
 
-```
-$ heroku login
+```bash
+heroku login
 ```
 
 2. Create app
 
-```
-$ heroku create appname
+```bash
+heroku create appname
 ```
 
 3. Create postgress database
 
-```
-$ heroku addons:create heroku-postgresql:mini
+```bash
+heroku addons:create heroku-postgresql:mini
 ```
 
 4. Use [psql](https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli) on the database server
 
-```
-$ heroku pg:psql
+```bash
+heroku pg:psql
 ```
 
 5. Create a table with an entry
@@ -63,24 +63,24 @@ SELECT * FROM blogs;
 
 8. Set stack to container
 
-```
-$ heroku stack:set container -a appname
+```bash
+heroku stack:set container -a appname
 ```
 
 9. Open second terminal window for logging
 
-```
-$ heroku logs -t --app appname
+```bash
+heroku logs -t --app appname
 ```
 
 10. Push to Heroku
 
-```
-$ git push heroku main
+```bash
+git push heroku main
 ```
 
 11. Open app
 
-```
-$ heroku open api/blogs
+```bash
+heroku open api/blogs
 ```
