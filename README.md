@@ -29,24 +29,16 @@ heroku create appname
 heroku addons:create heroku-postgresql:mini
 ```
 
-4. Use [psql](https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli) on the database server
+4. Create initial table and entries
+
+```bash
+heroku pg:psql < init.sql
+```
+
+5. Use [psql](https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli) on the database server
 
 ```bash
 heroku pg:psql
-```
-
-5. Create a table with an entry
-
-```sql
-CREATE TABLE IF NOT EXISTS blogs (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    likes INTEGER NOT NULL
-);
-
-INSERT INTO blogs (title, author, url, likes) VALUES ('Some Blog', 'Some Author', 'https://google.com/', 1);
 ```
 
 6. Confirm the entry exists
