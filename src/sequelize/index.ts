@@ -28,21 +28,22 @@ const authenticate = (): Promise<void> => {
   return sequelize.authenticate();
 };
 
-const connectToPostgres = retryAsPromised((_options) => authenticate(), {
-  max: 5,
-  timeout: 10000,
-  match: [
-    ConnectionAcquireTimeoutError,
-    ConnectionError,
-    ConnectionRefusedError,
-    ConnectionTimedOutError,
-    /Deadlock/i,
-    'SQLITE_BUSY',
-  ],
-  backoffBase: 2000,
-  backoffExponent: 2,
-  report: (msg, _object) => logger.info(msg),
-  name: 'Postgres',
-});
+export const connectToPostgres = () =>
+  retryAsPromised((_options) => authenticate(), {
+    max: 5,
+    timeout: 10000,
+    match: [
+      ConnectionAcquireTimeoutError,
+      ConnectionError,
+      ConnectionRefusedError,
+      ConnectionTimedOutError,
+      /Deadlock/i,
+      'SQLITE_BUSY',
+    ],
+    backoffBase: 2000,
+    backoffExponent: 2,
+    report: (msg, _object) => logger.info(msg),
+    name: 'Postgres',
+  });
 
 export default connectToPostgres;

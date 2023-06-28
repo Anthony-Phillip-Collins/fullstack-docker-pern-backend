@@ -8,6 +8,7 @@ import constants from './src/constants';
 const app = express();
 
 if (constants.IS_MONGODB) {
+  console.log('?? MONGO', constants.IS_MONGODB);
   connectToMongo()
     .then(() => {
       logger.info('Connected to MongoDB');
@@ -17,7 +18,7 @@ if (constants.IS_MONGODB) {
       logger.error('Error: Unable to connect to MongoDB');
     });
 } else {
-  connectToPostgres
+  connectToPostgres()
     .then(() => {
       logger.info('Connected to Postgres');
       init(app);
