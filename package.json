@@ -2,6 +2,17 @@
   "name": "fullstack-docker-pern-backend",
   "version": "1.1.2",
   "description": "Submodule for the backend of the fullstack-docker-pern project",
+  "keywords": [
+    "fullstack",
+    "docker",
+    "postgres",
+    "express",
+    "react",
+    "nginx",
+    "mongodb",
+    "typescript",
+    "vite"
+  ],
   "main": "index.ts",
   "scripts": {
     "tsc": "tsc",
