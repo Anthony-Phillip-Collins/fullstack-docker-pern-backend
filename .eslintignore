@@ -3,3 +3,4 @@ build
 dist
 coverage
 docker-entrypoint-initdb.d/**/*.js
+cli.js

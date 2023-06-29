@@ -32,46 +32,34 @@ heroku addons:create heroku-postgresql:mini
 4. Create initial table and entries
 
 ```bash
-heroku pg:psql < init.sql
+heroku pg:psql < commands.sql
 ```
 
-5. Use [psql](https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli) on the database server
+5. Confirm the entry exists
 
 ```bash
-heroku pg:psql
+heroku pg:psql -c 'SELECT * FROM blogs;'
 ```
 
-6. Confirm the entry exists
-
-```sql
-SELECT * FROM blogs;
-```
-
-7. Exit database server
-
-```
-\q
-```
-
-8. Set stack to container
+6. Set stack to container
 
 ```bash
 heroku stack:set container -a appname
 ```
 
-9. Open second terminal window for logging
+7. Open second terminal window for logging
 
 ```bash
 heroku logs -t --app appname
 ```
 
-10. Push to Heroku
+8. Push to Heroku
 
 ```bash
 git push heroku main
 ```
 
-11. Open app
+9. Open app
 
 ```bash
 heroku open api/blogs
