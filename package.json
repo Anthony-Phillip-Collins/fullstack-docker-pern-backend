@@ -9,7 +9,6 @@
     "express",
     "react",
     "nginx",
-    "mongodb",
     "typescript",
     "vite"
   ],
@@ -24,10 +23,8 @@
     "docker:dev:build:nc": "npm run docker:dev:build -- --no-cache",
     "docker:dev:up": "docker compose -f docker-compose.dev.yml up",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down --remove-orphans",
-    "docker:dev:mongo": "docker exec -it dev.mongo mongosh admin -u root -p 'example'",
-    "docker:dev:mongo:user": "docker exec -it dev.mongo mongosh -u the_username -p 'the_password' the_database",
     "docker:dev:ps": "docker compose -f docker-compose.dev.yml ps -a",
-    "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.app:4000"
+    "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.backend:4000"
   },
   "author": "Anthony Collins",
   "license": "ISC",
@@ -53,7 +50,6 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "latest-version": "^7.0.0",
-    "mongoose": "^7.2.2",
     "pg": "^8.11.0",
     "retry-as-promised": "^7.0.4",
     "sequelize": "^6.32.1",

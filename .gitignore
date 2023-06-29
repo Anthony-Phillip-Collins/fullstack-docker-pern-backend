@@ -1,7 +1,4 @@
 .DS_Store
 node_modules
 
-mongo_data_*
-redis_data_*
-
 build

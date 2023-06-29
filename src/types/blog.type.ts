@@ -8,7 +8,7 @@ export interface Blog {
 
 export type NewBlog = Omit<Blog, 'id'>;
 
-export type UpdateBlog = Partial<Omit<NewBlog, 'likes'>>;
+export type UpdateBlog = Pick<NewBlog, 'likes'>;
 
 export interface BlogService {
   getAll: () => Promise<Blog[]>;

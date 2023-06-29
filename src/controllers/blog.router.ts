@@ -2,7 +2,9 @@ import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { StatusCodes } from '../types/errors.type';
 import { parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
-import blogService from '../services/blog.service';
+import { nextError } from '../utils/middleware/errorHandler';
+import BlogModel from '../sequelize/models/blog.model';
+import blogService from '../sequelize/services/blog.service';
 
 export const router = Router();
 
@@ -10,7 +12,7 @@ router.get(
   '/',
   asyncHandler(async (_req: Request, res: Response, _next: NextFunction) => {
     const blogs = await blogService.getAll();
-    res.status(StatusCodes.OK).json(blogs);
+    res.json(blogs);
   })
 );
 
@@ -19,7 +21,7 @@ router.post(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const newBlog = parseNewBlog(req.body);
     const blog = await blogService.addOne(newBlog);
-    res.status(StatusCodes.OK).json(blog);
+    res.json(blog);
   })
 );
 
@@ -38,18 +40,16 @@ router.put('/', (_req: Request, _res: Response, next: NextFunction) => {
 /* Single Blog routes */
 
 const findByIdMiddleware = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
-  const blog = await blogService.getById(req.params.id);
-  req.blog = blog;
+  req.blog = await BlogModel.findByPk(req.params.id);
   next();
 });
 
 router.get('/:id', findByIdMiddleware, (req: Request, res: Response, next: NextFunction) => {
   if (!req.blog) {
-    const error = new Error('Blog not found!');
-    error.status = StatusCodes.NOT_FOUND;
+    const error = nextError('Blog not found!', StatusCodes.NOT_FOUND);
     next(error);
   } else {
-    res.send(req.blog);
+    res.json(req.blog);
   }
 });
 
@@ -63,17 +63,15 @@ router.put('/:id', (_req: Request, _res: Response, next: NextFunction) => {
 
 router.patch(
   '/:id',
+  findByIdMiddleware,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const update = parseUpdateBlog(req.body);
-    const blog = await blogService.updateOne(req.params.id, update);
-
-    if (!blog) {
-      const error = new Error('Blog not found!');
-      error.status = StatusCodes.NOT_FOUND;
+    if (!req.blog) {
+      const error = nextError('Blog not found!', StatusCodes.NOT_FOUND);
       return next(error);
     }
-
-    res.status(StatusCodes.OK).json(blog);
+    const update = parseUpdateBlog(req.body);
+    const blog = await req.blog.update(update);
+    res.json(blog);
   })
 );
 
@@ -81,13 +79,13 @@ router.delete(
   '/:id',
   findByIdMiddleware,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const blog = await blogService.deleteOne(req.params.id);
-    if (!blog) {
-      const error = new Error('Blog no longer exists!');
-      error.status = StatusCodes.GONE;
+    if (!req.blog) {
+      const error = nextError('Blog no longer exists!', StatusCodes.GONE);
       return next(error);
     }
-    res.status(StatusCodes.OK).json(blog);
+
+    await req.blog.destroy();
+    res.json(req.blog);
   })
 );
 

@@ -5,6 +5,12 @@ export const errorResponse = (message: string): ErrorResponse => {
   return { error: { message } };
 };
 
+export const nextError = (message: string, status: StatusCodes): Error => {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+};
+
 const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   let message = 'Something broke!';
   let status = StatusCodes.INTERNAL_SERVER_ERROR;
