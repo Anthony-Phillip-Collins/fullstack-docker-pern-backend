@@ -71,7 +71,7 @@ router.patch(
     }
     const update = parseUpdateBlog(req.body);
     const blog = await req.blog.update(update);
-    res.json(blog);
+    res.json({ likes: blog.likes });
   })
 );
 
