@@ -29,6 +29,7 @@ export const blogModelInit = (sequelize: Sequelize) => {
       modelName: 'blog',
     }
   );
+  return BlogModel;
 };
 
 export default BlogModel;

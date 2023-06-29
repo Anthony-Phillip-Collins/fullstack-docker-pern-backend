@@ -19,12 +19,11 @@ const dialectOptions = process.env.DYNO
     }
   : {};
 
-const authenticate = (): Promise<void> => {
+const authenticate = async (): Promise<void> => {
   const sequelize = new Sequelize(process.env.DATABASE_URL || '', { dialectOptions });
   const models = [blogModelInit];
-  models.forEach((model) => {
-    model(sequelize);
-  });
+  const sync = models.map((model) => model(sequelize).sync());
+  await Promise.all(sync);
   return sequelize.authenticate();
 };
 
