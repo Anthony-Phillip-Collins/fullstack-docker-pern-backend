@@ -22,8 +22,7 @@ router.post(
   userExtractor,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      const error = nextError('User not found!', StatusCodes.UNAUTHORIZED);
-      return next(error);
+      return next(nextError('User not found!', StatusCodes.UNAUTHORIZED));
     }
     const newBlog = parseNewBlog({ ...req.body });
     const blog = await blogService.addOne(newBlog);
@@ -40,8 +39,7 @@ const findByIdMiddleware = asyncHandler(async (req: Request, _res: Response, nex
 
 router.get('/:id', findByIdMiddleware, (req: Request, res: Response, next: NextFunction) => {
   if (!req.blog) {
-    const error = nextError('Blog not found!', StatusCodes.NOT_FOUND);
-    next(error);
+    next(nextError('Blog not found!', StatusCodes.NOT_FOUND));
   } else {
     res.json(req.blog);
   }
@@ -50,10 +48,10 @@ router.get('/:id', findByIdMiddleware, (req: Request, res: Response, next: NextF
 router.patch(
   '/:id',
   findByIdMiddleware,
+  userExtractor,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.blog) {
-      const error = nextError('Blog not found!', StatusCodes.NOT_FOUND);
-      return next(error);
+      return next(nextError('Blog not found!', StatusCodes.NOT_FOUND));
     }
     const update = parseUpdateBlog(req.body);
     const blog = await req.blog.update(update);
@@ -64,14 +62,14 @@ router.patch(
 router.delete(
   '/:id',
   findByIdMiddleware,
+  userExtractor,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.blog) {
-      const error = nextError('Blog no longer exists!', StatusCodes.GONE);
-      return next(error);
+      return next(nextError('Blog no longer exists!', StatusCodes.GONE));
     }
 
     await req.blog.destroy();
-    res.json(req.blog);
+    res.status(StatusCodes.NO_CONTENT).json({});
   })
 );
 

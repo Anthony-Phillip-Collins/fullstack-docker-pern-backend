@@ -11,6 +11,12 @@ export const nextError = (message: string, status: StatusCodes): Error => {
   return error;
 };
 
+export const nextErrorByName = (errorName: ErrorNames): Error => {
+  const error = new Error();
+  error.name = errorName;
+  return error;
+};
+
 const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   let message = 'Something broke!';
   let status = StatusCodes.INTERNAL_SERVER_ERROR;

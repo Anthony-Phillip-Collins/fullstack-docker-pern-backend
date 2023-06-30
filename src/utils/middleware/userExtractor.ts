@@ -3,13 +3,12 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import constants from '../../constants';
 import UserModel from '../../sequelize/models/user.model';
-import { nextError } from './errorHandler';
-import { StatusCodes } from '../../types/errors.type';
+import { ErrorNames } from '../../types/errors.type';
+import { nextErrorByName } from './errorHandler';
 
 export const userExtractor = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
   if (!req.token) {
-    const error = nextError('Token is missing!', StatusCodes.UNAUTHORIZED);
-    return next(error);
+    return next(nextErrorByName(ErrorNames.JsonWebTokenError));
   }
 
   const decodedToken = jwt.verify(req.token, constants.JWT_SECRET);
@@ -19,8 +18,7 @@ export const userExtractor = asyncHandler(async (req: Request, _res: Response, n
   }
 
   if (!req.user) {
-    const error = nextError('User not found!', StatusCodes.UNAUTHORIZED);
-    return next(error);
+    return next(nextErrorByName(ErrorNames.Unauthorized));
   }
 
   next();
