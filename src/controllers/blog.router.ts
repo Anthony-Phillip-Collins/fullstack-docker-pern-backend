@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
+import BlogModel from '../sequelize/models/blog.model';
+import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
 import { parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
 import { nextError } from '../utils/middleware/errorHandler';
-import BlogModel from '../sequelize/models/blog.model';
-import blogService from '../sequelize/services/blog.service';
+import userExtractor from '../utils/middleware/userExtractor';
 
 export const router = Router();
 
@@ -18,24 +19,17 @@ router.get(
 
 router.post(
   '/',
-  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const newBlog = parseNewBlog(req.body);
+  userExtractor,
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      const error = nextError('User not found!', StatusCodes.UNAUTHORIZED);
+      return next(error);
+    }
+    const newBlog = parseNewBlog({ ...req.body });
     const blog = await blogService.addOne(newBlog);
     res.status(StatusCodes.CREATED).json(blog);
   })
 );
-
-router.delete('/', (_req: Request, _res: Response, next: NextFunction) => {
-  next(new Error('You cannot delete all blogs!'));
-});
-
-router.patch('/', (_req: Request, _res: Response, next: NextFunction) => {
-  next(new Error('You cannot update all blogs!'));
-});
-
-router.put('/', (_req: Request, _res: Response, next: NextFunction) => {
-  next(new Error('You cannot replace all blogs!'));
-});
 
 /* Single Blog routes */
 
@@ -51,19 +45,6 @@ router.get('/:id', findByIdMiddleware, (req: Request, res: Response, next: NextF
   } else {
     res.json(req.blog);
   }
-});
-
-router.post('/:id', (_req: Request, _res: Response, next: NextFunction) => {
-  const error = nextError('You cannot create a blog with a specific id!', StatusCodes.NOT_IMPLEMENTED);
-  next(error);
-});
-
-router.put('/:id', (_req: Request, _res: Response, next: NextFunction) => {
-  const error = nextError(
-    'You cannot replace a blog with a specific id! Use PATCH instead.',
-    StatusCodes.NOT_IMPLEMENTED
-  );
-  next(error);
 });
 
 router.patch(

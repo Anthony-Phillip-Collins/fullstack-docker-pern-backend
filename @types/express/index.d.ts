@@ -1,4 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
 import BlogModel from '../../src/sequelize/models/blog.model';
 import UserModel from '../../src/sequelize/models/user.model';
 
@@ -9,7 +8,7 @@ declare global {
     export interface Request {
       blog?: BlogModel | null;
       user?: UserModel | null;
-      token?: string | JwtPayload;
+      token?: string;
     }
   }
 }

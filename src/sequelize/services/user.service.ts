@@ -1,5 +1,17 @@
 import bcrypt from 'bcrypt';
-import { NewUserFields, UpdateUser, UpdateUserFields, User } from '../../types/user.type';
+import jwt from 'jsonwebtoken';
+import constants from '../../constants';
+import { StatusCodes } from '../../types/errors.type';
+import {
+  LoginFields,
+  NewUser,
+  NewUserFields,
+  UpdateUser,
+  UpdateUserFields,
+  User,
+  UserForToken,
+  UserWithToken,
+} from '../../types/user.type';
 import UserModel from '../models/user.model';
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -43,17 +55,39 @@ const updateOne = async (id: string, updateFields: UpdateUserFields): Promise<Us
   return user;
 };
 
-export const addOne = async (newUser: NewUserFields): Promise<User> => {
-  const { username, name, password } = newUser;
+const addOne = async (newUserFields: NewUserFields): Promise<User> => {
+  const { username, name, password } = newUserFields;
   const exists = await UserModel.findOne({ where: { username } });
 
   if (exists) throw new Error('User already exists!');
 
   const hashedPassword = await hashPassword(password);
-
-  const userModel = await UserModel.create({ username, name, hashedPassword });
+  const newUser: NewUser = { username, name, hashedPassword };
+  const userModel = await UserModel.create(newUser);
   const user = userModel.toJSON();
   return user;
+};
+
+const login = async (loginFields: LoginFields): Promise<UserWithToken> => {
+  const { username, password } = loginFields;
+  const user = await UserModel.findOne({ where: { username } });
+
+  const passwordCorrect = !user ? false : await bcrypt.compare(password, user.hashedPassword);
+
+  if (!passwordCorrect || !user) {
+    const error = new Error('invalid username or password');
+    error.status = StatusCodes.UNAUTHORIZED;
+    throw error;
+  }
+
+  const userForToken: UserForToken = {
+    username: username,
+    name: user.name,
+  };
+
+  const token = jwt.sign(userForToken, constants.JWT_SECRET);
+
+  return { token, ...userForToken };
 };
 
 const userService = {
@@ -62,6 +96,7 @@ const userService = {
   addOne,
   deleteOne,
   updateOne,
+  login,
 };
 
 export default userService;

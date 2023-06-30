@@ -4,6 +4,7 @@ export interface Blog {
   url: string;
   title: string;
   likes: number;
+  // userId: string;
 }
 
 export type NewBlog = Omit<Blog, 'id'>;

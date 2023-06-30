@@ -6,13 +6,13 @@ export const isNewBlog = (object: unknown): object is NewBlog => {
   if (!object || typeof object !== 'object') {
     throw new Error('Blog data is missing.');
   }
-  const mandatory = ['author', 'title', 'url'];
+  const mandatory = ['author', 'title', 'url', 'userId'];
   return mandatory.filter((p) => p in object).length === mandatory.length;
 };
 
 export const parseNewBlog = (object: unknown): NewBlog => {
   if (!isNewBlog(object)) {
-    throw new Error('Some Blog data fields are missing. Needs author, title and url.');
+    throw new Error('Some Blog data fields are missing. Needs author, title, url and userId.');
   }
 
   const newBlog: NewBlog = {
@@ -20,6 +20,7 @@ export const parseNewBlog = (object: unknown): NewBlog => {
     title: parseString(object.title, 'title'),
     url: parseString(object.url, 'url'),
     likes: parseNumber(object.likes, 'likes'),
+    // userId: parseString(object.userId, 'userId'),
   };
 
   return newBlog;

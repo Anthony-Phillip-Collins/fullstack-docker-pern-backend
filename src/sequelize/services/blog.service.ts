@@ -26,7 +26,7 @@ const updateOne = async (id: string, update: UpdateBlog): Promise<Blog | undefin
   return blog;
 };
 
-export const addOne = async (newBlog: NewBlog): Promise<Blog> => {
+const addOne = async (newBlog: NewBlog): Promise<Blog> => {
   const { author, title } = newBlog;
   const exists = await BlogModel.findOne({ where: { author, title } });
 
