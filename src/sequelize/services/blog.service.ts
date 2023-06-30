@@ -1,4 +1,4 @@
-import { Blog, BlogService, NewBlog, UpdateBlog } from '../../types/blog.type';
+import { Blog, NewBlog, UpdateBlog } from '../../types/blog.type';
 import BlogModel from '../models/blog.model';
 
 const getAll = async (): Promise<Blog[]> => {
@@ -37,7 +37,7 @@ export const addOne = async (newBlog: NewBlog): Promise<Blog> => {
   return blog;
 };
 
-const blogService: BlogService = {
+const blogService = {
   getAll,
   getById,
   addOne,

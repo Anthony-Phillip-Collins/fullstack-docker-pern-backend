@@ -8,22 +8,23 @@ import {
 } from 'sequelize';
 import logger from '../utils/logger';
 import { blogModelInit } from './models/blog.model';
+import { userModelInit } from './models/user.model';
 
-// check if we are running on heroku (DYNO) otherwise local development
-const dialectOptions = process.env.DYNO
-  ? {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    }
-  : {};
+const initModels = async (sequelize: Sequelize) => {
+  const models = [blogModelInit, userModelInit];
+  const sync = models.map((model) => model(sequelize).sync());
+  return Promise.all(sync);
+};
+
+const getOptions = () => {
+  // check if we are running on heroku (DYNO) otherwise local development
+  const herokuOptions = { ssl: { require: true, rejectUnauthorized: false } };
+  return process.env.DYNO ? { dialectOptions: herokuOptions } : {};
+};
 
 const authenticate = async (): Promise<void> => {
-  const sequelize = new Sequelize(process.env.DATABASE_URL || '', { dialectOptions });
-  const models = [blogModelInit];
-  const sync = models.map((model) => model(sequelize).sync());
-  await Promise.all(sync);
+  const sequelize = new Sequelize(process.env.DATABASE_URL || '', getOptions());
+  await initModels(sequelize);
   return sequelize.authenticate();
 };
 
