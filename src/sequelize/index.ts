@@ -7,8 +7,8 @@ import {
   Sequelize,
 } from 'sequelize';
 import logger from '../utils/logger';
-import { blogModelInit } from './models/blog.model';
-import { userModelInit } from './models/user.model';
+import BlogModel, { blogModelInit } from './models/blog.model';
+import UserModel, { userModelInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
   const models = [blogModelInit, userModelInit];
@@ -25,6 +25,10 @@ const getOptions = () => {
 const authenticate = async (): Promise<void> => {
   const sequelize = new Sequelize(process.env.DATABASE_URL || '', getOptions());
   await initModels(sequelize);
+
+  UserModel.hasMany(BlogModel);
+  BlogModel.belongsTo(UserModel);
+
   return sequelize.authenticate();
 };
 

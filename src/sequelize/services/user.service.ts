@@ -20,7 +20,7 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const getAll = async (): Promise<User[]> => {
-  const userModels = await UserModel.findAll();
+  const userModels = await UserModel.findAll({ include: 'blogs' });
   const users = userModels.map((user) => user.toJSON());
   return users;
 };

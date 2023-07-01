@@ -6,6 +6,7 @@ class UserModel extends Model<User, NewUser> {
   declare username: string;
   declare name: string;
   declare hashedPassword: string;
+  declare getBlogs: () => Promise<User['blogs']>;
 }
 
 export const userModelInit = (sequelize: Sequelize) => {

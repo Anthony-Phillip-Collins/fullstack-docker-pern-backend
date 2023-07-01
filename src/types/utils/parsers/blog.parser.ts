@@ -20,7 +20,7 @@ export const parseNewBlog = (object: unknown): NewBlog => {
     title: parseString(object.title, 'title'),
     url: parseString(object.url, 'url'),
     likes: parseNumber(object.likes, 'likes'),
-    // userId: parseString(object.userId, 'userId'),
+    userId: parseNumber(object.userId, 'userId'),
   };
 
   return newBlog;

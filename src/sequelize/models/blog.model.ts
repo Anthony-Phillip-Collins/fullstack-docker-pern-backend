@@ -1,5 +1,6 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, ForeignKey, Model, Sequelize } from 'sequelize';
 import { Blog, NewBlog } from '../../types/blog.type';
+import { User } from '../../types/user.type';
 
 class BlogModel extends Model<Blog, NewBlog> {
   declare id: number;
@@ -7,6 +8,7 @@ class BlogModel extends Model<Blog, NewBlog> {
   declare author: string;
   declare url: string;
   declare likes: number;
+  declare userId: ForeignKey<User['id']>;
 }
 
 export const blogModelInit = (sequelize: Sequelize) => {
@@ -21,6 +23,14 @@ export const blogModelInit = (sequelize: Sequelize) => {
       author: { type: DataTypes.STRING, allowNull: false },
       url: { type: DataTypes.STRING, allowNull: false },
       likes: { type: DataTypes.INTEGER, allowNull: false },
+      userId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
     },
     {
       sequelize,
@@ -29,6 +39,7 @@ export const blogModelInit = (sequelize: Sequelize) => {
       modelName: 'blog',
     }
   );
+
   return BlogModel;
 };
 

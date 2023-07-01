@@ -24,7 +24,7 @@ router.post(
     if (!req.user) {
       return next(nextError('User not found!', StatusCodes.UNAUTHORIZED));
     }
-    const newBlog = parseNewBlog({ ...req.body });
+    const newBlog = parseNewBlog({ ...req.body, userId: req.user.id });
     const blog = await blogService.addOne(newBlog);
     res.status(StatusCodes.CREATED).json(blog);
   })

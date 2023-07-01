@@ -33,6 +33,7 @@ const addOne = async (newBlog: NewBlog): Promise<Blog> => {
   if (exists) throw new Error('Blog already exists!');
 
   const blogModel = await BlogModel.create(newBlog);
+
   const blog = blogModel.toJSON();
   return blog;
 };
