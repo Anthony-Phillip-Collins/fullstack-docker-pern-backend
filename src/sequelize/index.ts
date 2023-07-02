@@ -13,7 +13,18 @@ import UserModel, { userModelInit } from './models/user.model';
 const initModels = async (sequelize: Sequelize) => {
   const models = [blogModelInit, userModelInit];
   const sync = models.map((model) => model(sequelize).sync({ alter: true }));
-  return Promise.all(sync);
+
+  await Promise.all(sync);
+
+  UserModel.hasMany(BlogModel, {
+    sourceKey: 'id',
+    foreignKey: 'ownerId',
+    as: 'blogs',
+  });
+  BlogModel.belongsTo(UserModel, {
+    foreignKey: 'ownerId',
+    as: 'owner',
+  });
 };
 
 const getOptions = () => {
@@ -25,10 +36,6 @@ const getOptions = () => {
 const authenticate = async (): Promise<void> => {
   const sequelize = new Sequelize(process.env.DATABASE_URL || '', getOptions());
   await initModels(sequelize);
-
-  UserModel.hasMany(BlogModel);
-  BlogModel.belongsTo(UserModel);
-
   return sequelize.authenticate();
 };
 

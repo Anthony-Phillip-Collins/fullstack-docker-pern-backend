@@ -1,27 +1,27 @@
-import { Blog } from './blog.type';
+import { BlogType } from './blog.type';
 
-export interface User {
+export interface UserType {
   id: number;
   username: string;
   name: string;
   hashedPassword: string;
-  blogs?: Blog[];
+  blogs?: BlogType[];
 }
 
-export type UserForToken = Pick<User, 'username' | 'name'>;
+export type UserTypeForToken = Pick<UserType, 'username' | 'name'>;
 
-export interface UserWithToken extends UserForToken {
+export interface UserTypeWithToken extends UserTypeForToken {
   token: string;
 }
 
-export type NewUser = Omit<User, 'id' | 'blogs'>;
+export type NewUserType = Omit<UserType, 'id' | 'blogs'>;
 
-export type NewUserFields = Omit<NewUser, 'hashedPassword'> & {
+export type NewUserTypeFields = Omit<NewUserType, 'hashedPassword'> & {
   password: string;
 };
 
-export type UpdateUser = Partial<Pick<NewUser, 'name' | 'hashedPassword'>>;
+export type UpdateUserType = Partial<Pick<NewUserType, 'name' | 'hashedPassword'>>;
 
-export type UpdateUserFields = Partial<Omit<NewUserFields, 'username'>>;
+export type UpdateUserTypeFields = Partial<Omit<NewUserTypeFields, 'username'>>;
 
-export type LoginFields = Pick<NewUserFields, 'username' | 'password'>;
+export type LoginFields = Pick<NewUserTypeFields, 'username' | 'password'>;

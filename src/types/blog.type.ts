@@ -1,14 +1,11 @@
-import { User } from './user.type';
-
-export interface Blog {
+export interface BlogType {
   id: number;
   author: string;
   url: string;
   title: string;
   likes: number;
-  userId: User['id'];
 }
 
-export type NewBlog = Omit<Blog, 'id'>;
+export type NewBlogType = Omit<BlogType, 'id'>;
 
-export type UpdateBlog = Pick<NewBlog, 'likes'>;
+export type UpdateBlogType = Pick<NewBlogType, 'likes'>;

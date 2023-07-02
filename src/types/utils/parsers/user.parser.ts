@@ -1,10 +1,21 @@
-import { LoginFields, NewUserFields, UpdateUserFields } from '../../user.type';
+import User from '../../../sequelize/models/user.model';
+import { StatusCodes } from '../../errors.type';
+import { LoginFields, NewUserTypeFields, UpdateUserTypeFields } from '../../user.type';
 import { parsePassword } from './common/password.parser';
 import { parseString } from './common/string.parser';
 
-/* NewUserFields */
+export const parseUser = (object: unknown): User => {
+  if (!(object instanceof User)) {
+    const error = new Error('User not found!');
+    error.status = StatusCodes.NOT_FOUND;
+    throw error;
+  }
+  return object;
+};
 
-export const isNewUserFields = (object: unknown): object is NewUserFields => {
+/* NewUserTypeFields */
+
+export const isNewUserTypeFields = (object: unknown): object is NewUserTypeFields => {
   if (!object || typeof object !== 'object') {
     throw new Error('UserField data is missing.');
   }
@@ -12,12 +23,12 @@ export const isNewUserFields = (object: unknown): object is NewUserFields => {
   return mandatory.filter((p) => p in object).length === mandatory.length;
 };
 
-export const parseNewUserFields = (object: unknown): NewUserFields => {
-  if (!isNewUserFields(object)) {
+export const parseNewUserTypeFields = (object: unknown): NewUserTypeFields => {
+  if (!isNewUserTypeFields(object)) {
     throw new Error('Some UserFields are missing. Needs username, name and password.');
   }
 
-  const newUser: NewUserFields = {
+  const newUser: NewUserTypeFields = {
     username: parseString(object.username, 'username'),
     name: parseString(object.name, 'name'),
     password: parsePassword(object.password),
@@ -28,7 +39,7 @@ export const parseNewUserFields = (object: unknown): NewUserFields => {
 
 /* UdateUserFields */
 
-export const isUpdateUserFields = (object: unknown): object is UpdateUserFields => {
+export const isUpdateUserTypeFields = (object: unknown): object is UpdateUserTypeFields => {
   if (!object || typeof object !== 'object') {
     throw new Error('User data is missing.');
   }
@@ -36,12 +47,12 @@ export const isUpdateUserFields = (object: unknown): object is UpdateUserFields 
   return optional.filter((p) => p in object).length > 0;
 };
 
-export const parseUpdateUserFields = (object: unknown): UpdateUserFields => {
-  if (!isUpdateUserFields(object)) {
+export const parseUpdateUserTypeFields = (object: unknown): UpdateUserTypeFields => {
+  if (!isUpdateUserTypeFields(object)) {
     throw new Error('Only name and password can be updated.');
   }
 
-  const updateUser: UpdateUserFields = {};
+  const updateUser: UpdateUserTypeFields = {};
 
   if ('name' in object) updateUser.name = parseString(object.name, 'name');
   if ('password' in object) updateUser.password = parsePassword(object.password);

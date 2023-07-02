@@ -2,8 +2,8 @@ import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import userService from '../sequelize/services/user.service';
 import { StatusCodes } from '../types/errors.type';
-import { parseNewUserFields } from '../types/utils/parsers/user.parser';
 import userExtractor from '../utils/middleware/userExtractor';
+import { parseNewUserTypeFields } from '../types/utils/parsers/user.parser';
 
 export const router = Router();
 
@@ -19,7 +19,7 @@ router.get(
 router.post(
   '/',
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const { username, name, password } = parseNewUserFields(req.body);
+    const { username, name, password } = parseNewUserTypeFields(req.body);
     const user = await userService.addOne({ username, name, password });
     res.status(StatusCodes.CREATED).json(user);
   })

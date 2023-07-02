@@ -3,8 +3,8 @@ import asyncHandler from 'express-async-handler';
 import BlogModel from '../sequelize/models/blog.model';
 import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
-import { parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
-import { nextError } from '../utils/middleware/errorHandler';
+import { parseBlog, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
+import { parseUser } from '../types/utils/parsers/user.parser';
 import userExtractor from '../utils/middleware/userExtractor';
 
 export const router = Router();
@@ -20,12 +20,10 @@ router.get(
 router.post(
   '/',
   userExtractor,
-  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return next(nextError('User not found!', StatusCodes.UNAUTHORIZED));
-    }
-    const newBlog = parseNewBlog({ ...req.body, userId: req.user.id });
-    const blog = await blogService.addOne(newBlog);
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const newBlog = parseNewBlog(req.body);
+    const user = parseUser(req.user);
+    const blog = await blogService.addOne(newBlog, user);
     res.status(StatusCodes.CREATED).json(blog);
   })
 );
@@ -37,24 +35,21 @@ const findByIdMiddleware = asyncHandler(async (req: Request, _res: Response, nex
   next();
 });
 
-router.get('/:id', findByIdMiddleware, (req: Request, res: Response, next: NextFunction) => {
-  if (!req.blog) {
-    next(nextError('Blog not found!', StatusCodes.NOT_FOUND));
-  } else {
-    res.json(req.blog);
-  }
+router.get('/:id', findByIdMiddleware, (req: Request, res: Response, _next: NextFunction) => {
+  const blog = parseBlog(req.blog);
+  res.json(blog);
 });
 
 router.patch(
   '/:id',
   findByIdMiddleware,
   userExtractor,
-  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.blog) {
-      return next(nextError('Blog not found!', StatusCodes.NOT_FOUND));
-    }
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const blog = parseBlog(req.blog);
+    const user = parseUser(req.user);
     const update = parseUpdateBlog(req.body);
-    const blog = await req.blog.update(update);
+    blog.checkAuth(user);
+    await blog.update(update);
     res.json({ likes: blog.likes });
   })
 );
@@ -63,12 +58,11 @@ router.delete(
   '/:id',
   findByIdMiddleware,
   userExtractor,
-  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.blog) {
-      return next(nextError('Blog no longer exists!', StatusCodes.GONE));
-    }
-
-    await req.blog.destroy();
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const blog = parseBlog(req.blog);
+    const user = parseUser(req.user);
+    blog.checkAuth(user);
+    await blog.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })
 );

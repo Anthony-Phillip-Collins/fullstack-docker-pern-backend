@@ -4,42 +4,43 @@ import constants from '../../constants';
 import { StatusCodes } from '../../types/errors.type';
 import {
   LoginFields,
-  NewUser,
-  NewUserFields,
-  UpdateUser,
-  UpdateUserFields,
-  User,
-  UserForToken,
-  UserWithToken,
+  NewUserTypeFields,
+  UpdateUserType,
+  UpdateUserTypeFields,
+  UserTypeForToken,
+  UserTypeWithToken,
 } from '../../types/user.type';
-import UserModel from '../models/user.model';
+import UserModel, { UserAttributes, UserCreationAttributes } from '../models/user.model';
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
 };
 
-const getAll = async (): Promise<User[]> => {
+const getAll = async (): Promise<UserAttributes[]> => {
   const userModels = await UserModel.findAll({ include: 'blogs' });
   const users = userModels.map((user) => user.toJSON());
   return users;
 };
 
-const getById = async (id: string): Promise<User | undefined | null> => {
+const getById = async (id: string): Promise<UserAttributes | undefined | null> => {
   const userModel = await UserModel.findByPk(id);
   return userModel ? userModel.toJSON() : null;
 };
 
-const deleteOne = async (id: string): Promise<User | undefined | null> => {
+const deleteOne = async (id: string): Promise<UserAttributes | undefined | null> => {
   const userModel = await UserModel.findByPk(id);
   const user = userModel ? userModel.toJSON() : null;
   await userModel?.destroy();
   return user;
 };
 
-const updateOne = async (id: string, updateFields: UpdateUserFields): Promise<User | undefined | null> => {
+const updateOne = async (
+  id: string,
+  updateFields: UpdateUserTypeFields
+): Promise<UserAttributes | undefined | null> => {
   const { password, name } = updateFields;
-  const update: UpdateUser = {};
+  const update: UpdateUserType = {};
 
   if (password) {
     update.hashedPassword = await hashPassword(password);
@@ -55,20 +56,20 @@ const updateOne = async (id: string, updateFields: UpdateUserFields): Promise<Us
   return user;
 };
 
-const addOne = async (newUserFields: NewUserFields): Promise<User> => {
+const addOne = async (newUserFields: NewUserTypeFields): Promise<UserAttributes> => {
   const { username, name, password } = newUserFields;
   const exists = await UserModel.findOne({ where: { username } });
 
   if (exists) throw new Error('User already exists!');
 
   const hashedPassword = await hashPassword(password);
-  const newUser: NewUser = { username, name, hashedPassword };
+  const newUser: UserCreationAttributes = { username, name, hashedPassword };
   const userModel = await UserModel.create(newUser);
   const user = userModel.toJSON();
   return user;
 };
 
-const login = async (loginFields: LoginFields): Promise<UserWithToken> => {
+const login = async (loginFields: LoginFields): Promise<UserTypeWithToken> => {
   const { username, password } = loginFields;
   const user = await UserModel.findOne({ where: { username } });
 
@@ -80,7 +81,7 @@ const login = async (loginFields: LoginFields): Promise<UserWithToken> => {
     throw error;
   }
 
-  const userForToken: UserForToken = {
+  const userForToken: UserTypeForToken = {
     username: username,
     name: user.name,
   };
