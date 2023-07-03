@@ -1,18 +1,12 @@
-import {
-  CreationOptional,
-  DataTypes,
-  ForeignKey,
-  InferAttributes,
-  InferCreationAttributes,
-  Model,
-  NonAttribute,
-  Sequelize,
-} from 'sequelize';
+import { CreationOptional, DataTypes, ForeignKey, Model, NonAttribute, Sequelize } from 'sequelize';
 
 import { StatusCodes } from '../../types/errors.type';
 import User from './user.model';
+import { BlogAttributes, BlogCreation } from '../../types/blog.type';
 
-class Blog extends Model<InferAttributes<Blog>, InferCreationAttributes<Blog>> {
+export type BlogOrNothing = Blog | null | undefined;
+
+class Blog extends Model<BlogAttributes, BlogCreation> {
   declare id: CreationOptional<number>;
   declare ownerId: ForeignKey<User['id']>;
   declare title: string;
@@ -32,11 +26,6 @@ class Blog extends Model<InferAttributes<Blog>, InferCreationAttributes<Blog>> {
     return isAuth;
   }
 }
-
-export type BlogAttributes = Pick<Blog, 'id' | 'title' | 'author' | 'url' | 'likes'>;
-export type BlogCreationAttributes = Omit<BlogAttributes, 'id'>;
-export type BlogUpdateAttributes = Pick<BlogAttributes, 'likes'>;
-export type BlogOrNothing = Blog | null | undefined;
 
 export const blogInit = (sequelize: Sequelize) => {
   Blog.init(

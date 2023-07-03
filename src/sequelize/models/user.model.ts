@@ -12,16 +12,17 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
-  InferAttributes,
-  InferCreationAttributes,
   Model,
   NonAttribute,
   Sequelize,
 } from 'sequelize';
-import Blog from './blog.model';
 import { StatusCodes } from '../../types/errors.type';
+import Blog from './blog.model';
+import { UserAttributes, UserCreate } from '../../types/user.type';
 
-class User extends Model<InferAttributes<User, { omit: 'blogs' }>, InferCreationAttributes<User, { omit: 'blogs' }>> {
+export type UserOrNothing = UserAttributes | null | undefined;
+
+class User extends Model<UserAttributes, UserCreate> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare username: string;
@@ -54,24 +55,6 @@ class User extends Model<InferAttributes<User, { omit: 'blogs' }>, InferCreation
     return isAuth;
   }
 }
-
-export type UserAttributes = Pick<User, 'id' | 'name' | 'username' | 'hashedPassword'>;
-export type UserCreationAttributes = Omit<UserAttributes, 'id'>;
-export type UserCreationAttributesInput = Pick<UserAttributes, 'username' | 'name'> & {
-  password: string;
-};
-export type UserUpdateAttributes = Partial<Pick<UserCreationAttributes, 'name' | 'hashedPassword'>>;
-export type UserUpdateAttributesInput = Partial<Pick<UserCreationAttributesInput, 'name' | 'password'>>;
-
-export type UserNonSensitiveAttributes = Omit<UserAttributes, 'hashedPassword'>;
-
-export type UserForToken = Pick<UserAttributes, 'username' | 'name'>;
-export interface UserWithToken extends UserForToken {
-  token: string;
-}
-
-export type UserLogin = Pick<UserCreationAttributesInput, 'username' | 'password'>;
-export type UserOrNothing = UserAttributes | null | undefined;
 
 export const userInit = (sequelize: Sequelize) => {
   User.init(

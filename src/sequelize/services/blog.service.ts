@@ -1,4 +1,5 @@
-import Blog, { BlogAttributes, BlogCreationAttributes } from '../models/blog.model';
+import { BlogAttributes, BlogCreation } from '../../types/blog.type';
+import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
 const getAll = async (): Promise<BlogAttributes[]> => {
@@ -6,7 +7,7 @@ const getAll = async (): Promise<BlogAttributes[]> => {
   return blogs.map((blog) => blog.toJSON());
 };
 
-const addOne = async (newBlog: BlogCreationAttributes, user: User): Promise<BlogAttributes> => {
+const addOne = async (newBlog: BlogCreation, user: User): Promise<BlogAttributes> => {
   const { author, title } = newBlog;
   const exists = await Blog.findOne({ where: { author, title, ownerId: user.id } });
 

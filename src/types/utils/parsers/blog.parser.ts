@@ -1,4 +1,5 @@
-import Blog, { BlogCreationAttributes, BlogUpdateAttributes } from '../../../sequelize/models/blog.model';
+import Blog from '../../../sequelize/models/blog.model';
+import { BlogCreation, BlogUpdate } from '../../blog.type';
 import { StatusCodes } from '../../errors.type';
 import { parseNumber } from './common/number.parser';
 import { parseString } from './common/string.parser';
@@ -12,7 +13,7 @@ export const parseBlog = (object: unknown): Blog => {
   return object;
 };
 
-export const isNewBlog = (object: unknown): object is BlogCreationAttributes => {
+export const isNewBlog = (object: unknown): object is BlogCreation => {
   if (!object || typeof object !== 'object') {
     throw new Error('Blog data is missing.');
   }
@@ -20,12 +21,12 @@ export const isNewBlog = (object: unknown): object is BlogCreationAttributes => 
   return mandatory.filter((p) => p in object).length === mandatory.length;
 };
 
-export const parseNewBlog = (object: unknown): BlogCreationAttributes => {
+export const parseNewBlog = (object: unknown): BlogCreation => {
   if (!isNewBlog(object)) {
     throw new Error('Some Blog data fields are missing. Needs author, title, url and likes.');
   }
 
-  const newBlog: BlogCreationAttributes = {
+  const newBlog: BlogCreation = {
     author: parseString(object.author, 'author'),
     title: parseString(object.title, 'title'),
     url: parseString(object.url, 'url'),
@@ -35,7 +36,7 @@ export const parseNewBlog = (object: unknown): BlogCreationAttributes => {
   return newBlog;
 };
 
-export const isUpdateBlog = (object: unknown): object is BlogUpdateAttributes => {
+export const isUpdateBlog = (object: unknown): object is BlogUpdate => {
   if (!object || typeof object !== 'object') {
     throw new Error('Blog data is missing.');
   }
@@ -44,12 +45,12 @@ export const isUpdateBlog = (object: unknown): object is BlogUpdateAttributes =>
   return mandatory.filter((p) => p in object).length === mandatory.length && exact;
 };
 
-export const parseUpdateBlog = (object: unknown): BlogUpdateAttributes => {
+export const parseUpdateBlog = (object: unknown): BlogUpdate => {
   if (!isUpdateBlog(object)) {
     throw new Error('Only likes can be updated.');
   }
 
-  const updateBlog: BlogUpdateAttributes = {
+  const updateBlog: BlogUpdate = {
     likes: parseNumber(object.likes, 'likes'),
   };
 

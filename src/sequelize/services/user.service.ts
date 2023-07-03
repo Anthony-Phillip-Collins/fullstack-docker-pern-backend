@@ -2,17 +2,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import constants from '../../constants';
 import { StatusCodes } from '../../types/errors.type';
-import User, {
+import User, { UserOrNothing } from '../models/user.model';
+import {
   UserAttributes,
-  UserCreationAttributes,
-  UserCreationAttributesInput,
+  UserCreate,
+  UserCreatePassword,
   UserForToken,
   UserLogin,
-  UserOrNothing,
-  UserUpdateAttributes,
-  UserUpdateAttributesInput,
+  UserUpdate,
+  UserUpdatePassword,
   UserWithToken,
-} from '../models/user.model';
+} from '../../types/user.type';
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -30,9 +30,9 @@ const getById = async (id: string): Promise<UserOrNothing> => {
   return await User.findByPk(id);
 };
 
-const updateOne = async (user: User, updateFields: UserUpdateAttributesInput): Promise<UserOrNothing> => {
+const updateOne = async (user: User, updateFields: UserUpdatePassword): Promise<UserOrNothing> => {
   const { password, name } = updateFields;
-  const update: UserUpdateAttributes = {};
+  const update: UserUpdate = {};
 
   if (password) {
     update.hashedPassword = await hashPassword(password);
@@ -46,21 +46,21 @@ const updateOne = async (user: User, updateFields: UserUpdateAttributesInput): P
   return user && user.toJSON();
 };
 
-const addOne = async (newUserFields: UserCreationAttributesInput): Promise<UserAttributes> => {
+const addOne = async (newUserFields: UserCreatePassword): Promise<UserAttributes> => {
   const { username, name, password } = newUserFields;
   const exists = await User.findOne({ where: { username } });
 
   if (exists) throw new Error('User already exists!');
 
   const hashedPassword = await hashPassword(password);
-  const newUser: UserCreationAttributes = { username, name, hashedPassword };
+  const newUser: UserCreate = { username, name, hashedPassword };
   const userModel = await User.create(newUser);
   const user = userModel.toJSON();
   return user;
 };
 
-const login = async (loginFields: UserLogin): Promise<UserWithToken> => {
-  const { username, password } = loginFields;
+const login = async (login: UserLogin): Promise<UserWithToken> => {
+  const { username, password } = login;
   const user = await User.findOne({ where: { username } });
 
   const passwordCorrect = !user ? false : await bcrypt.compare(password, user.hashedPassword);
@@ -71,14 +71,14 @@ const login = async (loginFields: UserLogin): Promise<UserWithToken> => {
     throw error;
   }
 
-  const userForToken: UserForToken = {
+  const UserForToken: UserForToken = {
     username: username,
     name: user.name,
   };
 
-  const token = jwt.sign(userForToken, constants.JWT_SECRET);
+  const token = jwt.sign(UserForToken, constants.JWT_SECRET);
 
-  return { token, ...userForToken };
+  return { token, ...UserForToken };
 };
 
 const userService = {

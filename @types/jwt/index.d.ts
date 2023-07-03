@@ -1,4 +1,4 @@
-import { UserForToken } from '../../src/sequelize/models/user.model';
+import { UserForToken } from '../../src/types/user.type';
 
 export {};
 

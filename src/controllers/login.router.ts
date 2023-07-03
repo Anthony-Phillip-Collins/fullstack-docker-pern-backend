@@ -9,8 +9,8 @@ router.post(
   '/',
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const { username, password } = parseUserLogin(req.body);
-    const userWithToken = await userService.login({ username, password });
-    res.json(userWithToken);
+    const UserWithToken = await userService.login({ username, password });
+    res.json(UserWithToken);
   })
 );
 
