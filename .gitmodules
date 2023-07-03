@@ -1,0 +1,3 @@
+[submodule "src/types"]
+	path = src/types
+	url = https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern-types.git
