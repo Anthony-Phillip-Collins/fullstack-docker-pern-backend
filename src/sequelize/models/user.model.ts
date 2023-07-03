@@ -18,50 +18,62 @@ import {
   NonAttribute,
   Sequelize,
 } from 'sequelize';
-import BlogModel from './blog.model';
+import Blog from './blog.model';
+import { StatusCodes } from '../../types/errors.type';
 
-// 'blogs' is excluded as it's not an attribute, it's an association.
 class User extends Model<InferAttributes<User, { omit: 'blogs' }>, InferCreationAttributes<User, { omit: 'blogs' }>> {
-  // id can be undefined during creation when using `autoIncrement`
   declare id: CreationOptional<number>;
   declare name: string;
   declare username: string;
   declare hashedPassword: string;
 
-  // Since TS cannot determine model association at compile time
-  // we have to declare them here purely virtually
-  // these will not exist until `Model.init` was called.
-  declare getBlogs: HasManyGetAssociationsMixin<BlogModel>; // Note the null assertions!
-  declare addBlog: HasManyAddAssociationMixin<BlogModel, number>;
-  declare addBlogs: HasManyAddAssociationsMixin<BlogModel, number>;
-  declare setBlogs: HasManySetAssociationsMixin<BlogModel, number>;
-  declare removeBlog: HasManyRemoveAssociationMixin<BlogModel, number>;
-  declare removeBlogs: HasManyRemoveAssociationsMixin<BlogModel, number>;
-  declare hasBlog: HasManyHasAssociationMixin<BlogModel, number>;
-  declare hasBlogs: HasManyHasAssociationsMixin<BlogModel, number>;
+  declare getBlogs: HasManyGetAssociationsMixin<Blog>;
+  declare addBlog: HasManyAddAssociationMixin<Blog, number>;
+  declare addBlogs: HasManyAddAssociationsMixin<Blog, number>;
+  declare setBlogs: HasManySetAssociationsMixin<Blog, number>;
+  declare removeBlog: HasManyRemoveAssociationMixin<Blog, number>;
+  declare removeBlogs: HasManyRemoveAssociationsMixin<Blog, number>;
+  declare hasBlog: HasManyHasAssociationMixin<Blog, number>;
+  declare hasBlogs: HasManyHasAssociationsMixin<Blog, number>;
   declare countBlogs: HasManyCountAssociationsMixin;
-  declare createBlog: HasManyCreateAssociationMixin<BlogModel, 'ownerId'>;
+  declare createBlog: HasManyCreateAssociationMixin<Blog, 'ownerId'>;
 
-  // You can also pre-declare possible inclusions, these will only be populated if you
-  // actively include a relation.
-  declare blogs?: NonAttribute<BlogModel[]>; // Note this is optional since it's only populated when explicitly requested in code
-
-  // getters that are not attributes should be tagged using NonAttribute
-  // to remove them from the model's Attribute Typings.
-  get fullName(): NonAttribute<string> {
-    return this.name;
-  }
+  declare blogs?: NonAttribute<Blog[]>;
 
   declare static associations: {
-    blogs: Association<User, BlogModel>;
+    blogs: Association<User, Blog>;
   };
+
+  auth(id: string | number): NonAttribute<boolean> {
+    const isAuth = this.id === Number(id);
+    if (!isAuth) {
+      const error = new Error('Not authorized!');
+      error.status = StatusCodes.UNAUTHORIZED;
+      throw error;
+    }
+    return isAuth;
+  }
 }
 
 export type UserAttributes = Pick<User, 'id' | 'name' | 'username' | 'hashedPassword'>;
 export type UserCreationAttributes = Omit<UserAttributes, 'id'>;
-export type UserMaybe = User | null | undefined;
+export type UserCreationAttributesInput = Pick<UserAttributes, 'username' | 'name'> & {
+  password: string;
+};
+export type UserUpdateAttributes = Partial<Pick<UserCreationAttributes, 'name' | 'hashedPassword'>>;
+export type UserUpdateAttributesInput = Partial<Pick<UserCreationAttributesInput, 'name' | 'password'>>;
 
-export const userModelInit = (sequelize: Sequelize) => {
+export type UserNonSensitiveAttributes = Omit<UserAttributes, 'hashedPassword'>;
+
+export type UserForToken = Pick<UserAttributes, 'username' | 'name'>;
+export interface UserWithToken extends UserForToken {
+  token: string;
+}
+
+export type UserLogin = Pick<UserCreationAttributesInput, 'username' | 'password'>;
+export type UserOrNothing = UserAttributes | null | undefined;
+
+export const userInit = (sequelize: Sequelize) => {
   User.init(
     {
       id: {

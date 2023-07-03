@@ -7,21 +7,23 @@ import {
   Sequelize,
 } from 'sequelize';
 import logger from '../utils/logger';
-import BlogModel, { blogModelInit } from './models/blog.model';
-import UserModel, { userModelInit } from './models/user.model';
+import Blog, { blogInit } from './models/blog.model';
+import User, { userInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
-  const models = [blogModelInit, userModelInit];
+  const models = [blogInit, userInit];
   const sync = models.map((model) => model(sequelize).sync({ alter: true }));
 
   await Promise.all(sync);
 
-  UserModel.hasMany(BlogModel, {
+  User.hasMany(Blog, {
     sourceKey: 'id',
     foreignKey: 'ownerId',
     as: 'blogs',
+    onDelete: 'cascade',
+    hooks: true,
   });
-  BlogModel.belongsTo(UserModel, {
+  Blog.belongsTo(User, {
     foreignKey: 'ownerId',
     as: 'owner',
   });

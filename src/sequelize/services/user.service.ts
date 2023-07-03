@@ -2,15 +2,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import constants from '../../constants';
 import { StatusCodes } from '../../types/errors.type';
-import {
-  LoginFields,
-  NewUserTypeFields,
-  UpdateUserType,
-  UpdateUserTypeFields,
-  UserTypeForToken,
-  UserTypeWithToken,
-} from '../../types/user.type';
-import UserModel, { UserAttributes, UserCreationAttributes } from '../models/user.model';
+import User, {
+  UserAttributes,
+  UserCreationAttributes,
+  UserCreationAttributesInput,
+  UserForToken,
+  UserLogin,
+  UserOrNothing,
+  UserUpdateAttributes,
+  UserUpdateAttributesInput,
+  UserWithToken,
+} from '../models/user.model';
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -18,29 +20,19 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const getAll = async (): Promise<UserAttributes[]> => {
-  const userModels = await UserModel.findAll({ include: 'blogs' });
-  const users = userModels.map((user) => user.toJSON());
-  return users;
+  const users = await User.findAll({
+    include: 'blogs',
+  });
+  return users.map((user) => user.toJSON());
 };
 
-const getById = async (id: string): Promise<UserAttributes | undefined | null> => {
-  const userModel = await UserModel.findByPk(id);
-  return userModel ? userModel.toJSON() : null;
+const getById = async (id: string): Promise<UserOrNothing> => {
+  return await User.findByPk(id);
 };
 
-const deleteOne = async (id: string): Promise<UserAttributes | undefined | null> => {
-  const userModel = await UserModel.findByPk(id);
-  const user = userModel ? userModel.toJSON() : null;
-  await userModel?.destroy();
-  return user;
-};
-
-const updateOne = async (
-  id: string,
-  updateFields: UpdateUserTypeFields
-): Promise<UserAttributes | undefined | null> => {
+const updateOne = async (user: User, updateFields: UserUpdateAttributesInput): Promise<UserOrNothing> => {
   const { password, name } = updateFields;
-  const update: UpdateUserType = {};
+  const update: UserUpdateAttributes = {};
 
   if (password) {
     update.hashedPassword = await hashPassword(password);
@@ -50,28 +42,26 @@ const updateOne = async (
     update.name = name;
   }
 
-  await UserModel.update(update, { where: { id } });
-  const userModel = await UserModel.findByPk(id);
-  const user = userModel ? userModel.toJSON() : null;
-  return user;
+  await user.update(update);
+  return user && user.toJSON();
 };
 
-const addOne = async (newUserFields: NewUserTypeFields): Promise<UserAttributes> => {
+const addOne = async (newUserFields: UserCreationAttributesInput): Promise<UserAttributes> => {
   const { username, name, password } = newUserFields;
-  const exists = await UserModel.findOne({ where: { username } });
+  const exists = await User.findOne({ where: { username } });
 
   if (exists) throw new Error('User already exists!');
 
   const hashedPassword = await hashPassword(password);
   const newUser: UserCreationAttributes = { username, name, hashedPassword };
-  const userModel = await UserModel.create(newUser);
+  const userModel = await User.create(newUser);
   const user = userModel.toJSON();
   return user;
 };
 
-const login = async (loginFields: LoginFields): Promise<UserTypeWithToken> => {
+const login = async (loginFields: UserLogin): Promise<UserWithToken> => {
   const { username, password } = loginFields;
-  const user = await UserModel.findOne({ where: { username } });
+  const user = await User.findOne({ where: { username } });
 
   const passwordCorrect = !user ? false : await bcrypt.compare(password, user.hashedPassword);
 
@@ -81,7 +71,7 @@ const login = async (loginFields: LoginFields): Promise<UserTypeWithToken> => {
     throw error;
   }
 
-  const userForToken: UserTypeForToken = {
+  const userForToken: UserForToken = {
     username: username,
     name: user.name,
   };
@@ -95,7 +85,6 @@ const userService = {
   getAll,
   getById,
   addOne,
-  deleteOne,
   updateOne,
   login,
 };

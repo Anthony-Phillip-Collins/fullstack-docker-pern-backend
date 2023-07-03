@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import BlogModel from '../sequelize/models/blog.model';
+import Blog from '../sequelize/models/blog.model';
 import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
 import { parseBlog, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
@@ -31,7 +31,7 @@ router.post(
 /* Single Blog routes */
 
 const findByIdMiddleware = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
-  req.blog = await BlogModel.findByPk(req.params.id);
+  req.blog = await Blog.findByPk(req.params.id);
   next();
 });
 
@@ -47,8 +47,8 @@ router.patch(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
     const user = parseUser(req.user);
+    blog.auth(user);
     const update = parseUpdateBlog(req.body);
-    blog.checkAuth(user);
     await blog.update(update);
     res.json({ likes: blog.likes });
   })
@@ -61,7 +61,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
     const user = parseUser(req.user);
-    blog.checkAuth(user);
+    blog.auth(user);
     await blog.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })

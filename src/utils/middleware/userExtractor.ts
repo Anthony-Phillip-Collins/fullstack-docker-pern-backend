@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import constants from '../../constants';
-import UserModel from '../../sequelize/models/user.model';
+import User from '../../sequelize/models/user.model';
 import { ErrorNames } from '../../types/errors.type';
 import { nextErrorByName } from './errorHandler';
 
@@ -12,9 +12,9 @@ export const userExtractor = asyncHandler(async (req: Request, _res: Response, n
   }
 
   const decodedToken = jwt.verify(req.token, constants.JWT_SECRET);
-
+  console.log('decodedToken', decodedToken);
   if (typeof decodedToken !== 'string') {
-    req.user = await UserModel.findOne({ where: { username: decodedToken.username } });
+    req.user = await User.findOne({ where: { username: decodedToken.username } });
   }
 
   if (!req.user) {
