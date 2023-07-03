@@ -3,8 +3,8 @@ import asyncHandler from 'express-async-handler';
 import Blog from '../sequelize/models/blog.model';
 import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
-import { parseBlog, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
-import { parseUser } from '../types/utils/parsers/user.parser';
+import { parseBlog, parseUser } from '../sequelize/util/parsers';
+import { parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
 import userExtractor from '../utils/middleware/userExtractor';
 
 export const router = Router();

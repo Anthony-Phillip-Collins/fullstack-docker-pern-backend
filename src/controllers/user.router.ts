@@ -3,8 +3,9 @@ import asyncHandler from 'express-async-handler';
 import userService from '../sequelize/services/user.service';
 import { StatusCodes } from '../types/errors.type';
 import { UserNonSensitive } from '../types/user.type';
-import { parseUser, parseUserCreatePassword } from '../types/utils/parsers/user.parser';
+import { parseUserCreatePassword } from '../types/utils/parsers/user.parser';
 import userExtractor from '../utils/middleware/userExtractor';
+import { parseUser } from '../sequelize/util/parsers';
 
 export const router = Router();
 
