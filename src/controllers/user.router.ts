@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import userService from '../sequelize/services/user.service';
+import { parseUser } from '../sequelize/util/parsers';
 import { StatusCodes } from '../types/errors.type';
-import { UserNonSensitive } from '../types/user.type';
 import { parseUserCreateInput, parseUserUpdateInput } from '../types/utils/parsers/user.parser';
 import userExtractor from '../utils/middleware/userExtractor';
-import { parseUser } from '../sequelize/util/parsers';
 
 export const router = Router();
 
@@ -39,12 +38,8 @@ router.get(
       error.status = StatusCodes.NOT_FOUND;
       throw error;
     }
-    const userNonSensitive: UserNonSensitive = {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-    };
-    res.json(userNonSensitive);
+
+    res.json(user);
   })
 );
 

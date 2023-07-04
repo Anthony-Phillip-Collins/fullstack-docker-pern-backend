@@ -13,6 +13,20 @@ import {
   UserUpdateInput,
   UserWithToken,
 } from '../../types/user.type';
+import Blog from '../models/blog.model';
+
+const defaultQueryOptions = {
+  attributes: {
+    exclude: ['hashedPassword'],
+  },
+  include: {
+    model: Blog,
+    as: 'blogs',
+    attributes: {
+      exclude: ['ownerId'],
+    },
+  },
+};
 
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -20,17 +34,12 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const getAll = async (): Promise<UserAttributes[]> => {
-  const users = await User.findAll({
-    include: {
-      association: 'blogs',
-      attributes: ['id', 'title', 'author', 'url', 'likes'],
-    },
-  });
+  const users = await User.findAll(defaultQueryOptions);
   return users.map((user) => user.toJSON());
 };
 
 const getById = async (id: string): Promise<UserOrNothing> => {
-  return await User.findByPk(id);
+  return await User.findByPk(id, defaultQueryOptions);
 };
 
 const updateOne = async (user: User, updateFields: UserUpdateInput): Promise<UserOrNothing> => {

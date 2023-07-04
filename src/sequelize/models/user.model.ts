@@ -27,6 +27,8 @@ class User extends Model<UserAttributes, UserCreate> {
   declare name: string;
   declare username: string;
   declare hashedPassword: string;
+  declare createdAt: Date;
+  declare updatedAt: Date;
 
   declare getBlogs: HasManyGetAssociationsMixin<Blog>;
   declare addBlog: HasManyAddAssociationMixin<Blog, number>;
@@ -79,10 +81,10 @@ export const userInit = (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'users',
       underscored: true,
-      timestamps: false,
-      sequelize,
+      timestamps: true,
     }
   );
   return User;

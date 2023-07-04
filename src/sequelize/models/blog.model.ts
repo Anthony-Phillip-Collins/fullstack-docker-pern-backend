@@ -8,11 +8,13 @@ export type BlogOrNothing = Blog | null | undefined;
 
 class Blog extends Model<BlogAttributes, BlogCreation> {
   declare id: CreationOptional<number>;
-  declare ownerId: ForeignKey<User['id']>;
   declare title: string;
   declare author: string;
   declare url: string;
   declare likes: number;
+  declare createdAt?: Date;
+  declare updatedAt?: Date;
+  declare ownerId: ForeignKey<User['id']>;
 
   declare owner?: NonAttribute<User>;
 
@@ -52,7 +54,7 @@ export const blogInit = (sequelize: Sequelize) => {
       sequelize,
       tableName: 'blogs',
       underscored: true,
-      timestamps: false,
+      timestamps: true,
     }
   );
 

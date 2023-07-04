@@ -12,7 +12,7 @@ import User, { userInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
   const models = [userInit, blogInit];
-  const sync = models.map((model) => model(sequelize).sync({ alter: true }));
+  const sync = models.map((model) => model(sequelize).sync()); //{ alter: true }
 
   await Promise.all(sync);
 

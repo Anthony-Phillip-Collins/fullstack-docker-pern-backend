@@ -3,7 +3,18 @@ import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
 const getAll = async (): Promise<BlogAttributes[]> => {
-  const blogs = await Blog.findAll();
+  const blogs = await Blog.findAll({
+    include: [
+      {
+        model: User,
+        as: 'owner',
+        attributes: ['name'],
+      },
+    ],
+    attributes: {
+      exclude: ['ownerId'],
+    },
+  });
   return blogs.map((blog) => blog.toJSON());
 };
 
