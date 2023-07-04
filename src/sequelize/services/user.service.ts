@@ -6,11 +6,11 @@ import User, { UserOrNothing } from '../models/user.model';
 import {
   UserAttributes,
   UserCreate,
-  UserCreatePassword,
+  UserCreateInput,
   UserForToken,
   UserLogin,
   UserUpdate,
-  UserUpdatePassword,
+  UserUpdateInput,
   UserWithToken,
 } from '../../types/user.type';
 
@@ -21,7 +21,10 @@ const hashPassword = async (password: string): Promise<string> => {
 
 const getAll = async (): Promise<UserAttributes[]> => {
   const users = await User.findAll({
-    include: 'blogs',
+    include: {
+      association: 'blogs',
+      attributes: ['id', 'title', 'author', 'url', 'likes'],
+    },
   });
   return users.map((user) => user.toJSON());
 };
@@ -30,7 +33,7 @@ const getById = async (id: string): Promise<UserOrNothing> => {
   return await User.findByPk(id);
 };
 
-const updateOne = async (user: User, updateFields: UserUpdatePassword): Promise<UserOrNothing> => {
+const updateOne = async (user: User, updateFields: UserUpdateInput): Promise<UserOrNothing> => {
   const { password, name } = updateFields;
   const update: UserUpdate = {};
 
@@ -46,7 +49,7 @@ const updateOne = async (user: User, updateFields: UserUpdatePassword): Promise<
   return user && user.toJSON();
 };
 
-const addOne = async (newUserFields: UserCreatePassword): Promise<UserAttributes> => {
+const addOne = async (newUserFields: UserCreateInput): Promise<UserAttributes> => {
   const { username, name, password } = newUserFields;
   const exists = await User.findOne({ where: { username } });
 

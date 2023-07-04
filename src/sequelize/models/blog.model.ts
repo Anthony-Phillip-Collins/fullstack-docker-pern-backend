@@ -41,9 +41,9 @@ export const blogInit = (sequelize: Sequelize) => {
       likes: { type: DataTypes.INTEGER, allowNull: false },
       ownerId: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: true,
         references: {
-          model: 'users',
+          model: User,
           key: 'id',
         },
       },

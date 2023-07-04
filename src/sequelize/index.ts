@@ -11,7 +11,7 @@ import Blog, { blogInit } from './models/blog.model';
 import User, { userInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
-  const models = [blogInit, userInit];
+  const models = [userInit, blogInit];
   const sync = models.map((model) => model(sequelize).sync({ alter: true }));
 
   await Promise.all(sync);
@@ -23,6 +23,7 @@ const initModels = async (sequelize: Sequelize) => {
     onDelete: 'cascade',
     hooks: true,
   });
+
   Blog.belongsTo(User, {
     foreignKey: 'ownerId',
     as: 'owner',
