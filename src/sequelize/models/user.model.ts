@@ -74,6 +74,11 @@ export const userInit = (sequelize: Sequelize) => {
         type: new DataTypes.STRING(128),
         allowNull: false,
         unique: true,
+        validate: {
+          isEmail: {
+            msg: 'Invalid email on username!',
+          },
+        },
       },
       hashedPassword: {
         type: new DataTypes.STRING(128),
