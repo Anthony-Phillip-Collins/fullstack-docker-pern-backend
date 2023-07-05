@@ -42,6 +42,10 @@ const getById = async (id: string): Promise<UserOrNothing> => {
   return await User.findByPk(id, defaultQueryOptions);
 };
 
+const getByUsername = async (username: string): Promise<UserOrNothing> => {
+  return await User.findOne({ ...defaultQueryOptions, where: { username } });
+};
+
 const updateOne = async (user: User, updateFields: UserUpdateInput): Promise<UserOrNothing> => {
   const { password, name } = updateFields;
   const update: UserUpdate = {};
@@ -96,6 +100,7 @@ const login = async (login: UserLogin): Promise<UserWithToken> => {
 const userService = {
   getAll,
   getById,
+  getByUsername,
   addOne,
   updateOne,
   login,

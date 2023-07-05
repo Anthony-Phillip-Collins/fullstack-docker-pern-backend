@@ -1,8 +1,29 @@
-import { BlogAttributes, BlogCreation } from '../../types/blog.type';
+import { Op, WhereOptions } from 'sequelize';
+import { BlogAttributes, BlogCreation, BlogQuery } from '../../types/blog.type';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
-const getAll = async (): Promise<BlogAttributes[]> => {
+const getAll = async (query: BlogQuery): Promise<BlogAttributes[]> => {
+  let where: WhereOptions<BlogAttributes> = {};
+
+  if (query.search) {
+    where = {
+      ...where,
+      [Op.or]: [
+        {
+          title: {
+            [Op.substring]: query.search,
+          },
+        },
+        {
+          author: {
+            [Op.substring]: query.search,
+          },
+        },
+      ],
+    };
+  }
+
   const blogs = await Blog.findAll({
     include: [
       {
@@ -11,9 +32,11 @@ const getAll = async (): Promise<BlogAttributes[]> => {
         attributes: ['name'],
       },
     ],
+    order: [['likes', 'DESC']],
     attributes: {
       exclude: ['ownerId'],
     },
+    where,
   });
   return blogs.map((blog) => blog.toJSON());
 };

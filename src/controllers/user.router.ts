@@ -10,7 +10,6 @@ export const router = Router();
 
 router.get(
   '/',
-  userExtractor,
   asyncHandler(async (_req: Request, res: Response, _next: NextFunction) => {
     const users = await userService.getAll();
     res.json(users);
@@ -30,7 +29,6 @@ router.post(
 
 router.get(
   '/:id',
-  userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const user = await userService.getById(req.params.id);
     if (!user) {
@@ -43,12 +41,12 @@ router.get(
   })
 );
 
-router.patch(
-  '/:id',
+router.put(
+  '/:username',
   userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const user = parseUser(req.user);
-    user.auth(req.params.id);
+    user.auth(req.params);
     const update = parseUserUpdateInput(req.body);
     const updated = await userService.updateOne(user, update);
     res.json(updated);
@@ -56,11 +54,11 @@ router.patch(
 );
 
 router.delete(
-  '/:id',
+  '/:username',
   userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const user = parseUser(req.user);
-    user.auth(req.params.id);
+    user.auth(req.params);
     await user.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })

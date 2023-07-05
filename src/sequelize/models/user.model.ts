@@ -22,6 +22,11 @@ import { UserAttributes, UserCreate } from '../../types/user.type';
 
 export type UserOrNothing = UserAttributes | null | undefined;
 
+interface AuthProps {
+  id?: string | number;
+  username?: string;
+}
+
 class User extends Model<UserAttributes, UserCreate> {
   declare id: CreationOptional<number>;
   declare name: string;
@@ -47,8 +52,16 @@ class User extends Model<UserAttributes, UserCreate> {
     blogs: Association<User, Blog>;
   };
 
-  auth(id: string | number): NonAttribute<boolean> {
-    const isAuth = this.id === Number(id);
+  auth({ id, username }: AuthProps): NonAttribute<boolean> {
+    let isAuth = false;
+    if (id) {
+      isAuth = this.id === Number(id);
+    }
+
+    if (username) {
+      isAuth = this.username === username;
+    }
+
     if (!isAuth) {
       const error = new Error('Not authorized!');
       error.status = StatusCodes.UNAUTHORIZED;

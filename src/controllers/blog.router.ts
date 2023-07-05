@@ -4,7 +4,7 @@ import Blog from '../sequelize/models/blog.model';
 import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
 import { parseBlog, parseUser } from '../sequelize/util/parsers';
-import { parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
+import { parseBlogQuery, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
 import userExtractor from '../utils/middleware/userExtractor';
 
 export const router = Router();
@@ -12,7 +12,8 @@ export const router = Router();
 router.get(
   '/',
   asyncHandler(async (_req: Request, res: Response, _next: NextFunction) => {
-    const blogs = await blogService.getAll();
+    const query = parseBlogQuery(_req.query);
+    const blogs = await blogService.getAll(query);
     res.json(blogs);
   })
 );
