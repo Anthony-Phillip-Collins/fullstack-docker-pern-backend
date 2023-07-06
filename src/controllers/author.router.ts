@@ -16,6 +16,7 @@ router.get(
     const blogs = await Blog.findAll({
       group: ['author'],
       attributes: ['author', [fn('COUNT', col('author')), 'blogs'], [fn('SUM', col('likes')), 'likes']],
+      order: [['likes', 'DESC']],
     });
 
     const authors = blogs.map((blog) => blog.toJSON());
