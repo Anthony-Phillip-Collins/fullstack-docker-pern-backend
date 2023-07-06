@@ -3,7 +3,7 @@ import { BlogAttributes, BlogCreation, BlogQuery } from '../../types/blog.type';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
-const getAll = async (query: BlogQuery): Promise<BlogAttributes[]> => {
+const getAll = async (query: BlogQuery = {}): Promise<BlogAttributes[]> => {
   let where: WhereOptions<BlogAttributes> = {};
 
   if (query.search) {
