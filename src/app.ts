@@ -14,7 +14,7 @@ export const init = (app: Express) => {
   app.use(requestLogger);
   app.use(tokenExtractor);
 
-  routes(app);
+  routes.init(app);
 
   app.use(unknownEndpoint);
   app.use(errorHandler);

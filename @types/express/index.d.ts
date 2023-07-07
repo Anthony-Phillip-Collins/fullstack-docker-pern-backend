@@ -8,6 +8,7 @@ declare global {
     export interface Request {
       blog?: BlogOrNothing;
       user?: UserOrNothing;
+      userOfSingleRoute?: UserOrNothing;
       token?: string;
     }
   }

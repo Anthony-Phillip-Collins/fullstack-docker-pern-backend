@@ -1,20 +1,20 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorNames, ErrorResponse, StatusCodes } from '../../types/errors.type';
+import { ErrorBody, ErrorNames, ErrorResponse, StatusCodes } from '../../types/errors.type';
+import { isObject } from '../../types/utils/parsers/common/object.parser';
 
 export const errorResponse = (message: string): ErrorResponse => {
   return { error: { message } };
 };
 
-export const nextError = (message: string, status: StatusCodes): Error => {
-  const error = new Error(message);
-  error.status = status;
-  return error;
-};
-
-export const nextErrorByName = (errorName: ErrorNames): Error => {
-  const error = new Error();
-  error.name = errorName;
-  return error;
+export const getError = (error: ErrorBody | ErrorNames): Error => {
+  const e = new Error();
+  if (isObject(error)) {
+    e.message = error.message;
+    e.status = error.status;
+  } else {
+    e.name = error;
+  }
+  return e;
 };
 
 const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
@@ -47,12 +47,12 @@ const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextF
         status = StatusCodes.UNAUTHORIZED;
         break;
       default:
-        message = error.message || 'Something broke!';
-        status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
+        message = error.message || message;
+        status = error.status || status;
     }
   }
 
-  res.status(status).send(errorResponse(message));
+  res.status(status).json(errorResponse(message));
 };
 
 export default errorHandler;

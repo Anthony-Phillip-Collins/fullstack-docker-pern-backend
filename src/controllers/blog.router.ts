@@ -5,7 +5,7 @@ import blogService from '../sequelize/services/blog.service';
 import { StatusCodes } from '../types/errors.type';
 import { parseBlog, parseUser } from '../sequelize/util/parsers';
 import { parseBlogQuery, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
-import userExtractor from '../utils/middleware/userExtractor';
+import { userExtractor } from '../utils/middleware/userExtractor';
 
 export const router = Router();
 
@@ -41,7 +41,7 @@ router.get('/:id', findByIdMiddleware, (req: Request, res: Response, _next: Next
   res.json(blog);
 });
 
-router.patch(
+router.put(
   '/:id',
   findByIdMiddleware,
   userExtractor,

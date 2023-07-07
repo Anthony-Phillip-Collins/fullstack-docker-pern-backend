@@ -16,22 +16,18 @@ import {
   NonAttribute,
   Sequelize,
 } from 'sequelize';
-import { StatusCodes } from '../../types/errors.type';
-import Blog from './blog.model';
 import { UserAttributes, UserCreate } from '../../types/user.type';
+import Blog from './blog.model';
 
 export type UserOrNothing = UserAttributes | null | undefined;
-
-interface AuthProps {
-  id?: string | number;
-  username?: string;
-}
 
 class User extends Model<UserAttributes, UserCreate> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare username: string;
   declare hashedPassword: string;
+  declare admin: boolean;
+  declare disabled: boolean;
   declare createdAt: Date;
   declare updatedAt: Date;
 
@@ -51,24 +47,6 @@ class User extends Model<UserAttributes, UserCreate> {
   declare static associations: {
     blogs: Association<User, Blog>;
   };
-
-  auth({ id, username }: AuthProps): NonAttribute<boolean> {
-    let isAuth = false;
-    if (id) {
-      isAuth = this.id === Number(id);
-    }
-
-    if (username) {
-      isAuth = this.username === username;
-    }
-
-    if (!isAuth) {
-      const error = new Error('Not authorized!');
-      error.status = StatusCodes.UNAUTHORIZED;
-      throw error;
-    }
-    return isAuth;
-  }
 }
 
 export const userInit = (sequelize: Sequelize) => {
@@ -96,6 +74,14 @@ export const userInit = (sequelize: Sequelize) => {
       hashedPassword: {
         type: new DataTypes.STRING(128),
         allowNull: false,
+      },
+      admin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      disabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {

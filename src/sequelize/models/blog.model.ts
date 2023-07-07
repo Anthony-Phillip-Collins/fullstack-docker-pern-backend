@@ -3,6 +3,7 @@ import { CreationOptional, DataTypes, ForeignKey, Model, NonAttribute, Sequelize
 import { StatusCodes } from '../../types/errors.type';
 import User from './user.model';
 import { BlogAttributes, BlogCreation } from '../../types/blog.type';
+import { getError } from '../../utils/middleware/errorHandler';
 
 export type BlogOrNothing = Blog | null | undefined;
 
@@ -21,9 +22,7 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   auth(user: User): NonAttribute<boolean> {
     const isAuth = this.ownerId === user.id;
     if (!isAuth) {
-      const error = new Error('Only the owner can update the blog!');
-      error.status = StatusCodes.FORBIDDEN;
-      throw error;
+      throw getError({ message: 'Only the owner can update the blog!', status: StatusCodes.FORBIDDEN });
     }
     return isAuth;
   }

@@ -2,6 +2,8 @@ import { Op, WhereOptions } from 'sequelize';
 import { BlogAttributes, BlogCreation, BlogQuery } from '../../types/blog.type';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
+import { getError } from '../../utils/middleware/errorHandler';
+import { StatusCodes } from '../../types/errors.type';
 
 const getAll = async (query: BlogQuery = {}): Promise<BlogAttributes[]> => {
   let where: WhereOptions<BlogAttributes> = {};
@@ -46,7 +48,7 @@ const addOne = async (newBlog: BlogCreation, user: User): Promise<BlogAttributes
   const exists = await Blog.findOne({ where: { author, title, ownerId: user.id } });
 
   if (exists) {
-    throw new Error('Blog already exists!');
+    throw getError({ message: 'Blog already exists!', status: StatusCodes.BAD_REQUEST });
   }
 
   const blog = await user.createBlog(newBlog);

@@ -3,8 +3,13 @@ import asyncHandler from 'express-async-handler';
 import userService from '../sequelize/services/user.service';
 import { parseUser } from '../sequelize/util/parsers';
 import { StatusCodes } from '../types/errors.type';
-import { parseUserCreateInput, parseUserUpdateInput } from '../types/utils/parsers/user.parser';
-import userExtractor from '../utils/middleware/userExtractor';
+import {
+  parseUserCreateInput,
+  parseUserUpdateAsAdminInput,
+  parseUserUpdateAsUserInput,
+} from '../types/utils/parsers/user.parser';
+import { getError } from '../utils/middleware/errorHandler';
+import { adminExtractor, userExtractor } from '../utils/middleware/userExtractor';
 
 export const router = Router();
 
@@ -18,9 +23,10 @@ router.get(
 
 router.post(
   '/',
+  adminExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const { username, name, password } = parseUserCreateInput(req.body);
-    const user = await userService.addOne({ username, name, password });
+    const { username, name, password, admin, disabled } = parseUserCreateInput(req.body);
+    const user = await userService.addOne({ username, name, password, admin, disabled });
     res.status(StatusCodes.CREATED).json(user);
   })
 );
@@ -32,9 +38,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const user = await userService.getById(req.params.id);
     if (!user) {
-      const error = new Error('User not found!');
-      error.status = StatusCodes.NOT_FOUND;
-      throw error;
+      throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
     }
 
     res.json(user);
@@ -45,10 +49,17 @@ router.put(
   '/:username',
   userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const user = parseUser(req.user);
-    user.auth(req.params);
-    const update = parseUserUpdateInput(req.body);
-    const updated = await userService.updateOne(user, update);
+    const userLoggedIn = parseUser(req.user);
+    const user = parseUser(req.userOfSingleRoute);
+    let update, updated;
+
+    if (userLoggedIn.admin) {
+      update = parseUserUpdateAsAdminInput(req.body);
+      updated = await userService.updateOneAsAdmin(user, update);
+    } else {
+      update = parseUserUpdateAsUserInput(req.body);
+      updated = await userService.updateOneAsUser(user, update);
+    }
     res.json(updated);
   })
 );
@@ -57,8 +68,7 @@ router.delete(
   '/:username',
   userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const user = parseUser(req.user);
-    user.auth(req.params);
+    const user = parseUser(req.userOfSingleRoute);
     await user.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })

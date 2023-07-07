@@ -9,11 +9,14 @@ import {
   UserCreateInput,
   UserForToken,
   UserLogin,
-  UserUpdate,
-  UserUpdateInput,
+  UserUpdateAsAdmin,
+  UserUpdateAsAdminInput,
+  UserUpdateAsUser,
+  UserUpdateAsUserInput,
   UserWithToken,
 } from '../../types/user.type';
 import Blog from '../models/blog.model';
+import { getError } from '../../utils/middleware/errorHandler';
 
 const defaultQueryOptions = {
   attributes: {
@@ -34,7 +37,7 @@ const hashPassword = async (password: string): Promise<string> => {
 };
 
 const getAll = async (): Promise<UserAttributes[]> => {
-  const users = await User.findAll(defaultQueryOptions);
+  const users = await User.findAll({ ...defaultQueryOptions, order: [['id', 'ASC']] });
   return users.map((user) => user.toJSON());
 };
 
@@ -46,9 +49,9 @@ const getByUsername = async (username: string): Promise<UserOrNothing> => {
   return await User.findOne({ ...defaultQueryOptions, where: { username } });
 };
 
-const updateOne = async (user: User, updateFields: UserUpdateInput): Promise<UserOrNothing> => {
+const getUpdateAsUser = async (updateFields: UserUpdateAsUserInput): Promise<UserUpdateAsUser> => {
   const { password, name } = updateFields;
-  const update: UserUpdate = {};
+  const update: UserUpdateAsUser = {};
 
   if (password) {
     update.hashedPassword = await hashPassword(password);
@@ -58,33 +61,55 @@ const updateOne = async (user: User, updateFields: UserUpdateInput): Promise<Use
     update.name = name;
   }
 
+  return update;
+};
+
+const updateOneAsUser = async (user: User, updateFields: UserUpdateAsUserInput): Promise<UserOrNothing> => {
+  const update: UserUpdateAsUser = await getUpdateAsUser(updateFields);
   await user.update(update);
-  return user && user.toJSON();
+  return user;
+};
+
+const updateOneAsAdmin = async (user: User, updateFields: UserUpdateAsAdminInput): Promise<UserOrNothing> => {
+  const { admin, disabled } = updateFields;
+  const updateAsUser: UserUpdateAsUser = await getUpdateAsUser(updateFields);
+  const update: UserUpdateAsAdmin = { ...updateAsUser };
+
+  if (admin) {
+    update.admin = admin;
+  }
+
+  if (disabled) {
+    update.disabled = disabled;
+  }
+
+  await user.update(update);
+  return user;
 };
 
 const addOne = async (newUserFields: UserCreateInput): Promise<UserAttributes> => {
-  const { username, name, password } = newUserFields;
+  const { username, name, password, admin, disabled } = newUserFields;
   const exists = await User.findOne({ where: { username } });
 
-  if (exists) throw new Error('User already exists!');
+  if (exists) {
+    throw getError({ message: 'User already exists!', status: StatusCodes.BAD_REQUEST });
+  }
 
   const hashedPassword = await hashPassword(password);
-  const newUser: UserCreate = { username, name, hashedPassword };
+  const newUser: UserCreate = { username, name, hashedPassword, admin, disabled };
   const userModel = await User.create(newUser);
   const user = userModel.toJSON();
   return user;
 };
 
-const login = async (login: UserLogin): Promise<UserWithToken> => {
+const login = async (login: UserLogin): Promise<UserWithToken | null> => {
   const { username, password } = login;
   const user = await User.findOne({ where: { username } });
 
   const passwordCorrect = !user ? false : await bcrypt.compare(password, user.hashedPassword);
 
   if (!passwordCorrect || !user) {
-    const error = new Error('invalid username or password');
-    error.status = StatusCodes.UNAUTHORIZED;
-    throw error;
+    throw getError({ message: 'invalid username or password', status: StatusCodes.UNAUTHORIZED });
   }
 
   const UserForToken: UserForToken = {
@@ -102,7 +127,8 @@ const userService = {
   getById,
   getByUsername,
   addOne,
-  updateOne,
+  updateOneAsUser,
+  updateOneAsAdmin,
   login,
 };
 

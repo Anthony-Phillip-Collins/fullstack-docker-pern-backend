@@ -1,21 +1,18 @@
 import { StatusCodes } from '../../types/errors.type';
+import { getError } from '../../utils/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
 export const parseBlog = (object: unknown): Blog => {
   if (!(object instanceof Blog)) {
-    const error = new Error('Blog not found!');
-    error.status = StatusCodes.NOT_FOUND;
-    throw error;
+    throw getError({ message: 'Blog not found!', status: StatusCodes.NOT_FOUND });
   }
   return object;
 };
 
 export const parseUser = (object: unknown): User => {
   if (!(object instanceof User)) {
-    const error = new Error('User not found!');
-    error.status = StatusCodes.NOT_FOUND;
-    throw error;
+    throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
   }
   return object;
 };
