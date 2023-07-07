@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import Blog from '../sequelize/models/blog.model';
 import blogService from '../sequelize/services/blog.service';
-import { StatusCodes } from '../types/errors.type';
 import { parseBlog, parseUser } from '../sequelize/util/parsers';
+import { StatusCodes } from '../types/errors.type';
 import { parseBlogQuery, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
+import { blogExtractor, blogExtractorAuth } from '../utils/middleware/blogExtractor';
 import { userExtractor } from '../utils/middleware/userExtractor';
 
 export const router = Router();
@@ -31,20 +31,15 @@ router.post(
 
 /* Single Blog routes */
 
-const findByIdMiddleware = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
-  req.blog = await Blog.findByPk(req.params.id);
-  next();
-});
-
-router.get('/:id', findByIdMiddleware, (req: Request, res: Response, _next: NextFunction) => {
+router.get('/:id', blogExtractor, (req: Request, res: Response, _next: NextFunction) => {
   const blog = parseBlog(req.blog);
   res.json(blog);
 });
 
 router.put(
   '/:id',
-  findByIdMiddleware,
   userExtractor,
+  blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
     const user = parseUser(req.user);
@@ -57,8 +52,8 @@ router.put(
 
 router.delete(
   '/:id',
-  findByIdMiddleware,
   userExtractor,
+  blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
     const user = parseUser(req.user);
