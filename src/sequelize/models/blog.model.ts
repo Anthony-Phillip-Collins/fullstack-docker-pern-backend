@@ -13,6 +13,7 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   declare author: string;
   declare url: string;
   declare likes: number;
+  declare year: number;
   declare createdAt?: Date;
   declare updatedAt?: Date;
   declare ownerId: ForeignKey<User['id']>;
@@ -40,6 +41,21 @@ export const blogInit = (sequelize: Sequelize) => {
       author: { type: DataTypes.STRING(128), allowNull: false },
       url: { type: DataTypes.STRING(128), allowNull: false },
       likes: { type: DataTypes.INTEGER, allowNull: false },
+      year: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1992,
+        validate: {
+          min: {
+            args: [1991],
+            msg: 'Year must be greater than 1990',
+          },
+          max: {
+            args: [new Date().getFullYear()],
+            msg: 'Year must be less or equal than current year',
+          },
+        },
+      },
       ownerId: {
         type: DataTypes.INTEGER,
         allowNull: true,
