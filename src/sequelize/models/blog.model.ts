@@ -3,7 +3,7 @@ import { CreationOptional, DataTypes, ForeignKey, Model, NonAttribute, Sequelize
 import { StatusCodes } from '../../types/errors.type';
 import User from './user.model';
 import { BlogAttributes, BlogCreation } from '../../types/blog.type';
-import { getError } from '../../utils/middleware/errorHandler';
+import { getError } from '../../util/middleware/errorHandler';
 
 export type BlogOrNothing = Blog | null | undefined;
 
@@ -32,7 +32,7 @@ export const blogInit = (sequelize: Sequelize) => {
   Blog.init(
     {
       id: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
@@ -41,7 +41,7 @@ export const blogInit = (sequelize: Sequelize) => {
       url: { type: DataTypes.STRING(128), allowNull: false },
       likes: { type: DataTypes.INTEGER, allowNull: false },
       ownerId: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         allowNull: true,
         references: {
           model: User,

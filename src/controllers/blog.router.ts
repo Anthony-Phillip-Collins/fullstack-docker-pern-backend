@@ -4,8 +4,8 @@ import blogService from '../sequelize/services/blog.service';
 import { parseBlog, parseUser } from '../sequelize/util/parsers';
 import { StatusCodes } from '../types/errors.type';
 import { parseBlogQuery, parseNewBlog, parseUpdateBlog } from '../types/utils/parsers/blog.parser';
-import { blogExtractor, blogExtractorAuth } from '../utils/middleware/blogExtractor';
-import { userExtractor } from '../utils/middleware/userExtractor';
+import { blogExtractor, blogExtractorAuth } from '../util/middleware/blogExtractor';
+import { userExtractor } from '../util/middleware/userExtractor';
 
 export const router = Router();
 
@@ -42,8 +42,9 @@ router.put(
   blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
-    const user = parseUser(req.user);
-    blog.auth(user);
+    // validate Auth is working!
+    // const user = parseUser(req.user);
+    // blog.auth(user);
     const update = parseUpdateBlog(req.body);
     await blog.update(update);
     res.json({ likes: blog.likes });
@@ -56,8 +57,9 @@ router.delete(
   blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
-    const user = parseUser(req.user);
-    blog.auth(user);
+    // !validate Auth is working!
+    // const user = parseUser(req.user);
+    // blog.auth(user);
     await blog.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })

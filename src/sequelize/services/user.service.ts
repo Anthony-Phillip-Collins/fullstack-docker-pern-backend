@@ -16,7 +16,7 @@ import {
   UserWithToken,
 } from '../../types/user.type';
 import Blog from '../models/blog.model';
-import { getError } from '../../utils/middleware/errorHandler';
+import { getError } from '../../util/middleware/errorHandler';
 
 const defaultQueryOptions = {
   attributes: {

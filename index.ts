@@ -1,7 +1,7 @@
 import express from 'express';
 import { init } from './src/app';
 import connectToPostgres from './src/sequelize';
-import logger from './src/utils/logger';
+import logger from './src/util/logger';
 
 const app = express();
 

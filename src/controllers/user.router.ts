@@ -8,8 +8,8 @@ import {
   parseUserUpdateAsAdminInput,
   parseUserUpdateAsUserInput,
 } from '../types/utils/parsers/user.parser';
-import { getError } from '../utils/middleware/errorHandler';
-import { adminExtractor, userExtractor } from '../utils/middleware/userExtractor';
+import { getError } from '../util/middleware/errorHandler';
+import { adminExtractor, userExtractor } from '../util/middleware/userExtractor';
 
 export const router = Router();
 

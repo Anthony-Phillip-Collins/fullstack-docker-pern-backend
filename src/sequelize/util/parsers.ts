@@ -1,5 +1,5 @@
 import { StatusCodes } from '../../types/errors.type';
-import { getError } from '../../utils/middleware/errorHandler';
+import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
 
