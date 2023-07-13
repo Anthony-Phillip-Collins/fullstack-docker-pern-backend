@@ -73,6 +73,6 @@ export const up: Migration = async ({ context: queryInterface }: Context): Promi
 };
 
 export const down: Migration = async ({ context: queryInterface }: Context): Promise<void> => {
-  await queryInterface.dropTable('blogs');
-  await queryInterface.dropTable('users');
+  await queryInterface.dropTable('blogs', { cascade: true });
+  await queryInterface.dropTable('users', { cascade: true });
 };
