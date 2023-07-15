@@ -18,8 +18,9 @@ import {
 } from 'sequelize';
 import { UserAttributes, UserCreate } from '../../types/user.type';
 import Blog from './blog.model';
+import Reading from './reading.model';
 
-export type UserOrNothing = UserAttributes | null | undefined;
+export type UserOrNothing = User | null | undefined;
 
 class User extends Model<UserAttributes, UserCreate> {
   declare id: CreationOptional<number>;
@@ -31,6 +32,7 @@ class User extends Model<UserAttributes, UserCreate> {
   declare createdAt: Date;
   declare updatedAt: Date;
 
+  declare blogs?: NonAttribute<Blog[]>;
   declare getBlogs: HasManyGetAssociationsMixin<Blog>;
   declare addBlog: HasManyAddAssociationMixin<Blog, number>;
   declare addBlogs: HasManyAddAssociationsMixin<Blog, number>;
@@ -42,10 +44,21 @@ class User extends Model<UserAttributes, UserCreate> {
   declare countBlogs: HasManyCountAssociationsMixin;
   declare createBlog: HasManyCreateAssociationMixin<Blog, 'ownerId'>;
 
-  declare blogs?: NonAttribute<Blog[]>;
+  declare readings?: NonAttribute<Reading[]>;
+  declare getReadings: HasManyGetAssociationsMixin<Reading>;
+  declare addReading: HasManyAddAssociationMixin<Reading, number>;
+  declare addReadings: HasManyAddAssociationsMixin<Reading, number>;
+  declare setReadings: HasManySetAssociationsMixin<Reading, number>;
+  declare removeReading: HasManyRemoveAssociationMixin<Reading, number>;
+  declare removeReadings: HasManyRemoveAssociationsMixin<Reading, number>;
+  declare hasReading: HasManyHasAssociationMixin<Reading, number>;
+  declare hasReadings: HasManyHasAssociationsMixin<Reading, number>;
+  declare countReadings: HasManyCountAssociationsMixin;
+  declare createReading: HasManyCreateAssociationMixin<Reading, 'userId'>;
 
   declare static associations: {
     blogs: Association<User, Blog>;
+    readings: Association<User, Blog>;
   };
 }
 

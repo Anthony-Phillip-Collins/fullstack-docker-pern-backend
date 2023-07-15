@@ -1,9 +1,27 @@
-import { CreationOptional, DataTypes, ForeignKey, Model, NonAttribute, Sequelize } from 'sequelize';
+import {
+  Association,
+  CreationOptional,
+  DataTypes,
+  ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
+  Model,
+  NonAttribute,
+  Sequelize,
+} from 'sequelize';
 
-import { StatusCodes } from '../../types/errors.type';
-import User from './user.model';
 import { BlogAttributes, BlogCreation } from '../../types/blog.type';
-import { getError } from '../../util/middleware/errorHandler';
+import { UserAttributes } from '../../types/user.type';
+import User from './user.model';
+import Reading from './reading.model';
 
 export type BlogOrNothing = Blog | null | undefined;
 
@@ -16,17 +34,25 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   declare year: number;
   declare createdAt?: Date;
   declare updatedAt?: Date;
-  declare ownerId: ForeignKey<User['id']>;
+  declare ownerId: ForeignKey<UserAttributes['id']>;
 
   declare owner?: NonAttribute<User>;
 
-  auth(user: User): NonAttribute<boolean> {
-    const isAuth = this.ownerId === user.id;
-    if (!isAuth) {
-      throw getError({ message: 'Only the owner can update the blog!', status: StatusCodes.FORBIDDEN });
-    }
-    return isAuth;
-  }
+  declare readers?: NonAttribute<Reading[]>;
+  declare getReaders: HasManyGetAssociationsMixin<Reading>;
+  declare addReader: HasManyAddAssociationMixin<Reading, number>;
+  declare addReaders: HasManyAddAssociationsMixin<Reading, number>;
+  declare setReaders: HasManySetAssociationsMixin<Reading, number>;
+  declare removeReader: HasManyRemoveAssociationMixin<Reading, number>;
+  declare removeReaders: HasManyRemoveAssociationsMixin<Reading, number>;
+  declare hasReader: HasManyHasAssociationMixin<Reading, number>;
+  declare hasReaders: HasManyHasAssociationsMixin<Reading, number>;
+  declare countReaders: HasManyCountAssociationsMixin;
+  declare createReader: HasManyCreateAssociationMixin<Reading, 'blogId'>;
+
+  declare static associations: {
+    readers: Association<Blog, Reading>;
+  };
 }
 
 export const blogInit = (sequelize: Sequelize) => {

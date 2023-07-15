@@ -2,9 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import constants from '../../constants';
 import { StatusCodes } from '../../types/errors.type';
-import User, { UserOrNothing } from '../models/user.model';
 import {
-  UserAttributes,
   UserCreate,
   UserCreateInput,
   UserForToken,
@@ -15,20 +13,35 @@ import {
   UserUpdateAsUserInput,
   UserWithToken,
 } from '../../types/user.type';
-import Blog from '../models/blog.model';
 import { getError } from '../../util/middleware/errorHandler';
+import Blog from '../models/blog.model';
+import User, { UserOrNothing } from '../models/user.model';
 
 const defaultQueryOptions = {
   attributes: {
     exclude: ['hashedPassword'],
   },
-  include: {
-    model: Blog,
-    as: 'blogs',
-    attributes: {
-      exclude: ['ownerId'],
+};
+
+const singleQueryOptions = {
+  ...defaultQueryOptions,
+  include: [
+    {
+      model: Blog,
+      as: 'blogs',
+      attributes: {
+        exclude: ['ownerId', 'createdAt', 'updatedAt'],
+      },
     },
-  },
+    {
+      model: Blog,
+      as: 'readings',
+      attributes: {
+        exclude: ['url', 'likes', 'year', 'ownerId', 'createdAt', 'updatedAt'],
+      },
+      through: { attributes: ['read'] },
+    },
+  ],
 };
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -36,20 +49,7 @@ const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, saltRounds);
 };
 
-const getAll = async (): Promise<UserAttributes[]> => {
-  const users = await User.findAll({ ...defaultQueryOptions, order: [['id', 'ASC']] });
-  return users.map((user) => user.toJSON());
-};
-
-const getById = async (id: string): Promise<UserOrNothing> => {
-  return await User.findByPk(id, defaultQueryOptions);
-};
-
-const getByUsername = async (username: string): Promise<UserOrNothing> => {
-  return await User.findOne({ ...defaultQueryOptions, where: { username } });
-};
-
-const getUpdateAsUser = async (updateFields: UserUpdateAsUserInput): Promise<UserUpdateAsUser> => {
+const getUpdateAsUserFields = async (updateFields: UserUpdateAsUserInput): Promise<UserUpdateAsUser> => {
   const { password, name } = updateFields;
   const update: UserUpdateAsUser = {};
 
@@ -64,15 +64,26 @@ const getUpdateAsUser = async (updateFields: UserUpdateAsUserInput): Promise<Use
   return update;
 };
 
+const getAll = async (): Promise<User[]> => {
+  return await User.findAll({ ...defaultQueryOptions });
+};
+
+const getById = async (id: string): Promise<UserOrNothing> => {
+  return await User.findByPk(id, singleQueryOptions);
+};
+
+const getByUsername = async (username: string): Promise<UserOrNothing> => {
+  return await User.findOne({ ...singleQueryOptions, where: { username } });
+};
+
 const updateOneAsUser = async (user: User, updateFields: UserUpdateAsUserInput): Promise<UserOrNothing> => {
-  const update: UserUpdateAsUser = await getUpdateAsUser(updateFields);
-  await user.update(update);
-  return user;
+  const update: UserUpdateAsUser = await getUpdateAsUserFields(updateFields);
+  return await user.update(update);
 };
 
 const updateOneAsAdmin = async (user: User, updateFields: UserUpdateAsAdminInput): Promise<UserOrNothing> => {
   const { admin, disabled } = updateFields;
-  const updateAsUser: UserUpdateAsUser = await getUpdateAsUser(updateFields);
+  const updateAsUser: UserUpdateAsUser = await getUpdateAsUserFields(updateFields);
   const update: UserUpdateAsAdmin = { ...updateAsUser };
 
   if (admin) {
@@ -83,11 +94,10 @@ const updateOneAsAdmin = async (user: User, updateFields: UserUpdateAsAdminInput
     update.disabled = disabled;
   }
 
-  await user.update(update);
-  return user;
+  return await user.update(update);
 };
 
-const addOne = async (newUserFields: UserCreateInput): Promise<UserAttributes> => {
+const addOne = async (newUserFields: UserCreateInput): Promise<User> => {
   const { username, name, password, admin, disabled } = newUserFields;
   const exists = await User.findOne({ where: { username } });
 
@@ -97,9 +107,7 @@ const addOne = async (newUserFields: UserCreateInput): Promise<UserAttributes> =
 
   const hashedPassword = await hashPassword(password);
   const newUser: UserCreate = { username, name, hashedPassword, admin, disabled };
-  const userModel = await User.create(newUser);
-  const user = userModel.toJSON();
-  return user;
+  return await User.create(newUser);
 };
 
 const login = async (login: UserLogin): Promise<UserWithToken | null> => {

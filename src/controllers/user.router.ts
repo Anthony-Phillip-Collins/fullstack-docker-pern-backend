@@ -31,8 +31,6 @@ router.post(
   })
 );
 
-/* Single User routes */
-
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
@@ -40,7 +38,6 @@ router.get(
     if (!user) {
       throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
     }
-
     res.json(user);
   })
 );

@@ -29,12 +29,14 @@ router.post(
   })
 );
 
-/* Single Blog routes */
-
-router.get('/:id', blogExtractor, (req: Request, res: Response, _next: NextFunction) => {
-  const blog = parseBlog(req.blog);
-  res.json(blog);
-});
+router.get(
+  '/:id',
+  blogExtractor,
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const blog = parseBlog(await blogService.getById(req.params.id));
+    res.json(blog);
+  })
+);
 
 router.put(
   '/:id',
@@ -42,9 +44,6 @@ router.put(
   blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
-    // validate Auth is working!
-    // const user = parseUser(req.user);
-    // blog.auth(user);
     const update = parseUpdateBlog(req.body);
     await blog.update(update);
     res.json({ likes: blog.likes });
@@ -57,10 +56,8 @@ router.delete(
   blogExtractorAuth,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
-    // !validate Auth is working!
-    // const user = parseUser(req.user);
-    // blog.auth(user);
-    await blog.destroy();
+    const user = parseUser(req.user);
+    await blogService.deleteOne(blog, user);
     res.status(StatusCodes.NO_CONTENT).json({});
   })
 );
