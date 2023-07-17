@@ -1,11 +1,25 @@
 import { StatusCodes } from '../../types/errors.type';
-import { ReadingCreation } from '../../types/reading.type';
+import { ReadingCreation, ReadingQuery, ReadingUpdate } from '../../types/reading.type';
 import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import Reading from '../models/reading.model';
 
-const getAll = async (): Promise<Reading[]> => {
-  const readings = await Reading.findAll();
+// const getReading = async (reading: Reading | Reading['id'] | string): Promise<Reading | null> => {
+//   if (typeof reading === 'number' || typeof reading === 'string') {
+//     return await getById(reading);
+//   }
+
+//   return reading;
+// };
+
+const getAll = async (query: ReadingQuery): Promise<Reading[]> => {
+  let where = {};
+
+  if (query.read) {
+    where = { where: { read: query.read === 'true' } };
+  }
+
+  const readings = await Reading.findAll(where);
   return readings;
 };
 
@@ -27,13 +41,19 @@ const addOne = async (newReading: ReadingCreation): Promise<Reading> => {
   return reading;
 };
 
-const getById = async (id: string): Promise<Reading | null> => {
+const updateOne = async (reading: Reading, update: ReadingUpdate): Promise<Reading> => {
+  await reading.update(update);
+  return reading;
+};
+
+const getById = async (id: string | number): Promise<Reading | null> => {
   return await Reading.findByPk(id);
 };
 
 const readingService = {
   getAll,
   addOne,
+  updateOne,
   getById,
 };
 

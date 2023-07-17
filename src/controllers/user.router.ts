@@ -5,6 +5,7 @@ import { parseUser } from '../sequelize/util/parsers';
 import { StatusCodes } from '../types/errors.type';
 import {
   parseUserCreateInput,
+  parseUserQuery,
   parseUserUpdateAsAdminInput,
   parseUserUpdateAsUserInput,
 } from '../types/utils/parsers/user.parser';
@@ -34,7 +35,8 @@ router.post(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const user = await userService.getById(req.params.id);
+    const query = parseUserQuery(req.query);
+    const user = await userService.getById(req.params.id, query);
     if (!user) {
       throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
     }

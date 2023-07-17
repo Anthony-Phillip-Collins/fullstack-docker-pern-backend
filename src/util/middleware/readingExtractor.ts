@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import routes from '../../controllers';
-import Blog from '../../sequelize/models/blog.model';
+import readingService from '../../sequelize/services/reading.service';
 import { StatusCodes } from '../../types/errors.type';
 import { getError } from './errorHandler';
 
 const extract = (needsAuthentication?: boolean) =>
   asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const isBlogRoute = req.originalUrl.includes(routes.paths.blogs);
-    const isSingleBlogRoute = isBlogRoute && id;
+    const isReadingRoute = req.originalUrl.includes(routes.paths.readings);
+    const isSingleReadingRoute = isReadingRoute && id;
 
-    if (isSingleBlogRoute) {
-      req.blog = await Blog.findByPk(id);
+    if (isSingleReadingRoute) {
+      req.reading = await readingService.getById(id);
 
       if (needsAuthentication) {
         const user = req?.user;
-        if (!(user?.admin || req?.blog?.ownerId === user?.id)) {
+        if (!(user?.admin || req?.reading?.userId === user?.id)) {
           throw getError({
-            message: 'Only the owner or admin can perform operations on a blog!',
+            message: 'Only the owner or admin can perform operations on readings!',
             status: StatusCodes.FORBIDDEN,
           });
         }
@@ -28,5 +28,5 @@ const extract = (needsAuthentication?: boolean) =>
     next();
   });
 
-export const blogExtractor = extract();
-export const blogExtractorAuth = extract(true);
+export const readingExtractor = extract();
+export const readingExtractorAuth = extract(true);

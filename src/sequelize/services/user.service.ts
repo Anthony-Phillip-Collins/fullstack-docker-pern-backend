@@ -7,6 +7,7 @@ import {
   UserCreateInput,
   UserForToken,
   UserLogin,
+  UserQuery,
   UserUpdateAsAdmin,
   UserUpdateAsAdminInput,
   UserUpdateAsUser,
@@ -37,9 +38,9 @@ const singleQueryOptions = {
       model: Blog,
       as: 'readings',
       attributes: {
-        exclude: ['url', 'likes', 'year', 'ownerId', 'createdAt', 'updatedAt'],
+        exclude: ['ownerId', 'createdAt', 'updatedAt'],
       },
-      through: { attributes: ['read'] },
+      through: { attributes: ['read', 'id'] },
     },
   ],
 };
@@ -68,8 +69,32 @@ const getAll = async (): Promise<User[]> => {
   return await User.findAll({ ...defaultQueryOptions });
 };
 
-const getById = async (id: string): Promise<UserOrNothing> => {
-  return await User.findByPk(id, singleQueryOptions);
+const getById = async (id: string, query: UserQuery): Promise<UserOrNothing> => {
+  let whereReadings = {};
+  if (query?.read) {
+    whereReadings = { where: { read: query.read === 'true' } };
+  }
+
+  return await User.findByPk(id, {
+    ...defaultQueryOptions,
+    include: [
+      {
+        model: Blog,
+        as: 'blogs',
+        attributes: {
+          exclude: ['ownerId', 'createdAt', 'updatedAt'],
+        },
+      },
+      {
+        model: Blog,
+        as: 'readings',
+        attributes: {
+          exclude: ['ownerId', 'createdAt', 'updatedAt'],
+        },
+        through: { attributes: ['read', 'id'], ...whereReadings },
+      },
+    ],
+  });
 };
 
 const getByUsername = async (username: string): Promise<UserOrNothing> => {

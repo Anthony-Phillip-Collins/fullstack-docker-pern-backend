@@ -10,6 +10,8 @@ class Reading extends Model<ReadingAttributes, ReadingCreation> {
   declare read: boolean;
 }
 
+export type ReadingOrNothing = Reading | null | undefined;
+
 export const readingInit = (sequelize: Sequelize) => {
   Reading.init(
     {
