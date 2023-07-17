@@ -5,6 +5,7 @@ config();
 const PORT = process.env.PORT || 4000;
 const API_BASE_URL = process.env.API_BASE_URL || '/api';
 const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_EXPIRY = process.env.JWT_EXPIRY || '10m';
 const DATABASE_URL = process.env.DATABASE_URL || '';
 
-export default { API_BASE_URL, PORT, JWT_SECRET, DATABASE_URL };
+export default { API_BASE_URL, PORT, JWT_SECRET, JWT_EXPIRY, DATABASE_URL };

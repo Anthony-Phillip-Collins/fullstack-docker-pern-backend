@@ -150,7 +150,7 @@ const login = async (login: UserLogin): Promise<UserWithToken | null> => {
     name: user.name,
   };
 
-  const token = jwt.sign(UserForToken, constants.JWT_SECRET);
+  const token = jwt.sign(UserForToken, constants.JWT_SECRET, { expiresIn: constants.JWT_EXPIRY });
 
   return { token, ...UserForToken };
 };
