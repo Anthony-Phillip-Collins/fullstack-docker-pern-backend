@@ -8,10 +8,11 @@ import {
   Sequelize,
 } from 'sequelize';
 import { SequelizeStorage, Umzug } from 'umzug';
+import constants from '../constants';
 import logger from '../util/logger';
 import Blog, { blogInit } from './models/blog.model';
-import User, { userInit } from './models/user.model';
 import Reading, { readingInit } from './models/reading.model';
+import User, { userInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
   const models = [userInit, blogInit, readingInit];
@@ -59,7 +60,7 @@ export let umzug: Umzug<QueryInterface>;
 
 const initMigrations = (sequelize: Sequelize) => {
   const migrationConf = {
-    migrations: { glob: 'db/migrations/*.ts' },
+    migrations: { glob: constants.IS_PRODUCTION ? '/usr/src/app/build/db/migrations/*.js' : 'db/migrations/*.ts' },
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
     logger: console,
@@ -71,7 +72,7 @@ const initMigrations = (sequelize: Sequelize) => {
 const getSequelizeOptions = () => {
   // check if we are running on heroku (DYNO) otherwise local development
   const herokuOptions = { ssl: { require: true, rejectUnauthorized: false } };
-  return process.env.DYNO ? { dialectOptions: herokuOptions } : {};
+  return constants.IS_PRODUCTION ? { dialectOptions: herokuOptions } : {};
 };
 
 const authenticate = async (): Promise<void> => {
