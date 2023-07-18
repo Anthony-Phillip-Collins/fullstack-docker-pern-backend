@@ -3,7 +3,7 @@ FROM node:16.20.1-bullseye-slim as base
 ARG APP_PATH=/usr/src/app/
 
 RUN apt-get update
-RUN apt-get install -y dumb-init
+RUN apt-get install -y dumb-init vim
 RUN echo ${APP_PATH}
 RUN mkdir -p $APP_PATH && chown -R node:node $APP_PATH
 

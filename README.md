@@ -68,3 +68,11 @@ heroku open api/blogs
 ## Gotchas
 
 If you get the error that `bcrypt` can’t be found then try `npm rebuild`. Otherwise try [these fixes](https://www.codefari.com/2019/11/common-issue-cant-find-module-bcrypt-in.html).
+
+## Tips
+
+Run bash in the container
+
+```bash
+heroku run bash -a appname
+```
