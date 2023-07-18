@@ -84,10 +84,7 @@ const authenticate = async (): Promise<void> => {
 
 const init = async () => {
   await authenticate();
-  const migs = await umzug.up();
-  console.log('**************************');
-  console.log(migs);
-  console.log('**************************');
+  await umzug.up();
 };
 
 const connectToPostgres = () =>
