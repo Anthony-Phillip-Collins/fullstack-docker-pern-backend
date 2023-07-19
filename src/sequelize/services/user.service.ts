@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import constants from '../../constants';
 import { StatusCodes } from '../../types/errors.type';
 import {
   UserCreate,
@@ -17,6 +16,7 @@ import {
 import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User, { UserOrNothing } from '../models/user.model';
+import { ACCESS_TOKEN_EXPIRY, ACCESS_TOKEN_SECRET } from '../../config';
 
 const defaultQueryOptions = {
   attributes: {
@@ -150,7 +150,7 @@ const login = async (login: UserLogin): Promise<UserWithToken | null> => {
     name: user.name,
   };
 
-  const token = jwt.sign(UserForToken, constants.JWT_SECRET, { expiresIn: constants.JWT_EXPIRY });
+  const token = jwt.sign(UserForToken, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
 
   return { token, ...UserForToken };
 };

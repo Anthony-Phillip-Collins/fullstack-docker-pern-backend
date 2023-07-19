@@ -1,13 +1,13 @@
 import { Express } from 'express';
-import constants from '../constants';
 import baseRouter from './base.router';
 import blogRouter from './blog.router';
 import userRouter from './user.router';
 import loginRouter from './login.router';
 import authorRouter from './author.router';
 import readingRouter from './reading.router';
+import { API_BASE_URL } from '../config';
 
-const api = constants.API_BASE_URL;
+const api = API_BASE_URL;
 
 export const paths = {
   blogs: `${api}/blogs`,

@@ -26,40 +26,34 @@ heroku create appname
 3. Create postgress database
 
 ```bash
-heroku addons:create heroku-postgresql:mini
+heroku addons:create heroku-postgresql:mini -a appname
 ```
 
-4. Create initial table and entries
+4. Create redis database
 
 ```bash
-heroku pg:psql < commands.sql
+ heroku addons:create heroku-redis:mini -a appname
 ```
 
-5. Confirm the entry exists
-
-```bash
-heroku pg:psql -c 'SELECT * FROM blogs;'
-```
-
-6. Set stack to container
+5. Set stack to container
 
 ```bash
 heroku stack:set container -a appname
 ```
 
-7. Open second terminal window for logging
+6. Open second terminal window for logging
 
 ```bash
 heroku logs -t --app appname
 ```
 
-8. Push to Heroku
+7. Push to Heroku
 
 ```bash
 git push heroku main
 ```
 
-9. Open app
+8. Open app
 
 ```bash
 heroku open api/blogs
@@ -75,4 +69,16 @@ Run bash in the container
 
 ```bash
 heroku run bash -a appname
+```
+
+Run psql to query the database
+
+```bash
+heroku pg:psql -c 'SELECT * FROM blogs;' -a appname
+```
+
+Execute sql commands from a file
+
+```bash
+heroku pg:psql < commands.sql
 ```

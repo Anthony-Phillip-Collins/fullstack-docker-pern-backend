@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
+import redis from '../redis';
 import readingService from '../sequelize/services/reading.service';
 import { parseReading, parseUser } from '../sequelize/util/parsers';
 import { parseReadingCreation, parseReadingQuery, parseReadingUpdate } from '../types/utils/parsers/reading.parser';
@@ -13,6 +14,12 @@ router.get(
   asyncHandler(async (req, res) => {
     const query = parseReadingQuery(req.query);
     const readings = await readingService.getAll(query);
+
+    await redis.set('user', JSON.stringify({ name: 'John Doe' }));
+
+    console.log('================================');
+    console.log((await redis.get('user')) || 'no user');
+    console.log('================================');
     res.json(readings);
   })
 );
