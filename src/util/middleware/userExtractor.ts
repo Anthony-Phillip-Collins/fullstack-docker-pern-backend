@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import jwt from 'jsonwebtoken';
+import routes from '../../controllers';
 import userService from '../../sequelize/services/user.service';
+import tokenizer from '../../sequelize/util/tokenizer';
 import { ErrorNames, StatusCodes } from '../../types/errors.type';
 import { getError } from './errorHandler';
-import routes from '../../controllers';
-import { ACCESS_TOKEN_SECRET } from '../../config';
 
 const extract = (adminOnly?: boolean) =>
   asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
@@ -13,10 +12,10 @@ const extract = (adminOnly?: boolean) =>
       return next(getError(ErrorNames.JsonWebTokenError));
     }
 
-    const decodedToken = jwt.verify(req.token, ACCESS_TOKEN_SECRET);
+    const decoded = await tokenizer.verifyAccessToken(req.token);
 
-    if (typeof decodedToken !== 'string') {
-      req.user = await userService.getByUsername(decodedToken.username);
+    if (decoded && typeof decoded !== 'string') {
+      req.user = await userService.getByUsername(decoded.username);
     }
 
     if (req.user) {

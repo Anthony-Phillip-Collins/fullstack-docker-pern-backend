@@ -1,22 +1,17 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { StatusCodes } from '../../types/errors.type';
 import {
   UserCreate,
   UserCreateInput,
-  UserForToken,
-  UserLogin,
   UserQuery,
   UserUpdateAsAdmin,
   UserUpdateAsAdminInput,
   UserUpdateAsUser,
   UserUpdateAsUserInput,
-  UserWithToken,
 } from '../../types/user.type';
 import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User, { UserOrNothing } from '../models/user.model';
-import { ACCESS_TOKEN_EXPIRY, ACCESS_TOKEN_SECRET } from '../../config';
 
 const defaultQueryOptions = {
   attributes: {
@@ -134,27 +129,6 @@ const addOne = async (newUserFields: UserCreateInput): Promise<User> => {
   const newUser: UserCreate = { username, name, hashedPassword, admin, disabled };
   return await User.create(newUser);
 };
-
-const login = async (login: UserLogin): Promise<UserWithToken | null> => {
-  const { username, password } = login;
-  const user = await User.findOne({ where: { username } });
-
-  const passwordCorrect = !user ? false : await bcrypt.compare(password, user.hashedPassword);
-
-  if (!passwordCorrect || !user) {
-    throw getError({ message: 'invalid username or password', status: StatusCodes.UNAUTHORIZED });
-  }
-
-  const UserForToken: UserForToken = {
-    username: username,
-    name: user.name,
-  };
-
-  const token = jwt.sign(UserForToken, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
-
-  return { token, ...UserForToken };
-};
-
 const userService = {
   getAll,
   getById,
@@ -162,7 +136,6 @@ const userService = {
   addOne,
   updateOneAsUser,
   updateOneAsAdmin,
-  login,
 };
 
 export default userService;

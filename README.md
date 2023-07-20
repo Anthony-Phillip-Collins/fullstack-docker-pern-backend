@@ -82,3 +82,9 @@ Execute sql commands from a file
 ```bash
 heroku pg:psql < commands.sql
 ```
+
+Run redis-cli in dev container
+
+```bash
+docker exec -it dev.redis redis-cli
+```

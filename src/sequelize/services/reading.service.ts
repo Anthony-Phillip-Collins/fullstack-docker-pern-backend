@@ -4,14 +4,6 @@ import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import Reading from '../models/reading.model';
 
-// const getReading = async (reading: Reading | Reading['id'] | string): Promise<Reading | null> => {
-//   if (typeof reading === 'number' || typeof reading === 'string') {
-//     return await getById(reading);
-//   }
-
-//   return reading;
-// };
-
 const getAll = async (query: ReadingQuery): Promise<Reading[]> => {
   let where = {};
 

@@ -10,7 +10,8 @@ import {
   parseUserUpdateAsUserInput,
 } from '../types/utils/parsers/user.parser';
 import { getError } from '../util/middleware/errorHandler';
-import { adminExtractor, userExtractor } from '../util/middleware/userExtractor';
+import { userExtractor } from '../util/middleware/userExtractor';
+import tokenizer from '../sequelize/util/tokenizer';
 
 export const router = Router();
 
@@ -24,11 +25,11 @@ router.get(
 
 router.post(
   '/',
-  adminExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-    const { username, name, password, admin, disabled } = parseUserCreateInput(req.body);
-    const user = await userService.addOne({ username, name, password, admin, disabled });
-    res.status(StatusCodes.CREATED).json(user);
+    const { username, name, password } = parseUserCreateInput(req.body);
+    await userService.addOne({ username, name, password });
+    const userWithTokens = await tokenizer.signTokens({ username, name });
+    res.status(StatusCodes.CREATED).json(userWithTokens);
   })
 );
 
