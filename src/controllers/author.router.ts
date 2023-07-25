@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import Blog from '../sequelize/models/blog.model';
-import { getError } from '../util/middleware/errorHandler';
 import { StatusCodes } from '../types/errors.type';
+import getError from '../types/utils/getError';
 
 const router = Router();
 

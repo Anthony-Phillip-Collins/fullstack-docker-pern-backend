@@ -1,6 +1,6 @@
 import { StatusCodes } from '../../types/errors.type';
 import { ReadingCreation, ReadingQuery, ReadingUpdate } from '../../types/reading.type';
-import { getError } from '../../util/middleware/errorHandler';
+import getError from '../../types/utils/getError';
 import Blog from '../models/blog.model';
 import Reading from '../models/reading.model';
 

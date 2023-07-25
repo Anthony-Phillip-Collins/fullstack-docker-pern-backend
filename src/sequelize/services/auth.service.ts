@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import { StatusCodes } from '../../types/errors.type';
 import { UserForToken, UserLogin, UserWithToken } from '../../types/user.type';
-import { getError } from '../../util/middleware/errorHandler';
 import User from '../models/user.model';
 import tokenizer from '../util/tokenizer';
+import getError from '../../types/utils/getError';
 
 const login = async (login: UserLogin): Promise<UserWithToken | null> => {
   const { username, password } = login;

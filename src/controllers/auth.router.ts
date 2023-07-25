@@ -6,8 +6,8 @@ import tokenizer from '../sequelize/util/tokenizer';
 import { StatusCodes } from '../types/errors.type';
 import { parseString } from '../types/utils/parsers/common/string.parser';
 import { parseUserLogin } from '../types/utils/parsers/user.parser';
-import { getError } from '../util/middleware/errorHandler';
 import { userExtractor } from '../util/middleware/userExtractor';
+import getError from '../types/utils/getError';
 
 const router = Router();
 

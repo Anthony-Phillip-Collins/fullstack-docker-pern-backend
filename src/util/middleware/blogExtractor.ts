@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import routes from '../../controllers';
 import Blog from '../../sequelize/models/blog.model';
 import { StatusCodes } from '../../types/errors.type';
-import { getError } from './errorHandler';
+import getError from '../../types/utils/getError';
 
 const extract = (needsAuthentication?: boolean) =>
   asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {

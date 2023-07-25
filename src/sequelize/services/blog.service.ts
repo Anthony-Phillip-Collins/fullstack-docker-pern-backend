@@ -1,9 +1,9 @@
 import { Op, WhereOptions } from 'sequelize';
 import { BlogAttributes, BlogCreation, BlogQuery } from '../../types/blog.type';
 import { StatusCodes } from '../../types/errors.type';
-import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
+import getError from '../../types/utils/getError';
 
 const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
   let where: WhereOptions<BlogAttributes> = {};

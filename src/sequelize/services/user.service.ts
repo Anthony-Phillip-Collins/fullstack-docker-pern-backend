@@ -9,9 +9,9 @@ import {
   UserUpdateAsUser,
   UserUpdateAsUserInput,
 } from '../../types/user.type';
-import { getError } from '../../util/middleware/errorHandler';
 import Blog from '../models/blog.model';
 import User, { UserOrNothing } from '../models/user.model';
+import getError from '../../types/utils/getError';
 
 const defaultQueryOptions = {
   attributes: {

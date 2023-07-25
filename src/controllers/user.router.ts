@@ -9,9 +9,9 @@ import {
   parseUserUpdateAsAdminInput,
   parseUserUpdateAsUserInput,
 } from '../types/utils/parsers/user.parser';
-import { getError } from '../util/middleware/errorHandler';
 import { userExtractor } from '../util/middleware/userExtractor';
 import tokenizer from '../sequelize/util/tokenizer';
+import getError from '../types/utils/getError';
 
 export const router = Router();
 

@@ -4,7 +4,7 @@ import routes from '../../controllers';
 import userService from '../../sequelize/services/user.service';
 import tokenizer from '../../sequelize/util/tokenizer';
 import { ErrorNames, StatusCodes } from '../../types/errors.type';
-import { getError } from './errorHandler';
+import getError from '../../types/utils/getError';
 
 const extract = (adminOnly?: boolean) =>
   asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {

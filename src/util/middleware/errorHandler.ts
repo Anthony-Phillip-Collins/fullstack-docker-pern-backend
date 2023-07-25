@@ -1,22 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorBody, ErrorNames, ErrorResponse, StatusCodes } from '../../types/errors.type';
-import { isObject } from '../../types/utils/parsers/common/object.parser';
+import { ErrorNames, ErrorResponse, StatusCodes } from '../../types/errors.type';
 
 export const errorResponse = (message: string): ErrorResponse => {
   return { error: { message } };
 };
-
-export const getError = (error: ErrorBody | ErrorNames): Error => {
-  const e = new Error();
-  if (isObject(error)) {
-    e.message = error.message;
-    e.status = error.status;
-  } else {
-    e.name = error;
-  }
-  return e;
-};
-
 const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   let message = 'Something broke!';
   let status = StatusCodes.INTERNAL_SERVER_ERROR;

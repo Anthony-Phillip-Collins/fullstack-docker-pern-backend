@@ -4,8 +4,8 @@ import redis from '../../redis';
 import { StatusCodes } from '../../types/errors.type';
 import { UserForToken, UserWithToken } from '../../types/user.type';
 import { parseUserForToken } from '../../types/utils/parsers/user.parser';
-import { getError } from '../../util/middleware/errorHandler';
 import User from '../models/user.model';
+import getError from '../../types/utils/getError';
 
 const signAccessToken = (userForToken: UserForToken): Promise<string | undefined> =>
   new Promise((resolve, reject) => {
