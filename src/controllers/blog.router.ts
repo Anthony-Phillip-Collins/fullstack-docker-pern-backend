@@ -46,7 +46,7 @@ router.put(
     const blog = parseBlog(req.blog);
     const update = parseUpdateBlog(req.body);
     await blog.update(update);
-    res.json({ likes: blog.likes });
+    res.json(blog);
   })
 );
 
