@@ -10,7 +10,7 @@ const sharedOptions = {
     {
       model: User,
       as: 'owner',
-      attributes: ['name', 'username'],
+      attributes: ['name', 'username', 'id'],
     },
     {
       model: User,
