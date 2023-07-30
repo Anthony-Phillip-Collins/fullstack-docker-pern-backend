@@ -22,6 +22,7 @@ const login = async (login: UserLogin): Promise<UserWithToken | null> => {
   const userForToken: UserForToken = {
     username,
     name: user.name,
+    id: user.id,
   };
 
   return await tokenizer.signTokens(userForToken);
