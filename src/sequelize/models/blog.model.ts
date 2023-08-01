@@ -35,6 +35,7 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   declare createdAt?: Date;
   declare updatedAt?: Date;
   declare ownerId: ForeignKey<UserAttributes['id']>;
+  declare readerCount?: NonAttribute<number>;
 
   declare owner?: NonAttribute<User>;
 

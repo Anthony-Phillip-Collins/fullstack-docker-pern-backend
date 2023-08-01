@@ -5,20 +5,18 @@ import Blog from '../models/blog.model';
 import User from '../models/user.model';
 import getError from '../../types/utils/getError';
 
-const sharedOptions = {
-  include: [
-    {
-      model: User,
-      as: 'owner',
-      attributes: ['name', 'username', 'id'],
-    },
-    {
-      model: User,
-      as: 'readers',
-      attributes: ['name'],
-      through: { attributes: ['read'] },
-    },
-  ],
+const includes = {
+  owner: {
+    model: User,
+    as: 'owner',
+    attributes: ['name', 'username', 'id'],
+  },
+  readers: {
+    model: User,
+    as: 'readers',
+    attributes: ['name'],
+    through: { attributes: ['read'] },
+  },
 };
 
 const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
@@ -43,10 +41,10 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
   }
 
   const blogs = await Blog.findAll({
-    include: sharedOptions.include,
+    include: [includes.owner],
     order: [['likes', 'DESC']],
     attributes: {
-      exclude: ['ownerId'],
+      exclude: ['ownerId', 'createdAt', 'updatedAt'],
     },
     where,
   });
@@ -56,7 +54,7 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
 
 const getById = async (id: string): Promise<Blog | null> => {
   return await Blog.findByPk(id, {
-    include: sharedOptions.include,
+    include: [includes.owner, includes.readers],
   });
 };
 

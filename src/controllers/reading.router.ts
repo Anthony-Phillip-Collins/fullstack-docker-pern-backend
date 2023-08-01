@@ -5,6 +5,7 @@ import { parseReading, parseUser } from '../sequelize/util/parsers';
 import { parseReadingCreation, parseReadingQuery, parseReadingUpdate } from '../types/utils/parsers/reading.parser';
 import { readingExtractor, readingExtractorAuth } from '../util/middleware/readingExtractor';
 import { userExtractor } from '../util/middleware/userExtractor';
+import { StatusCodes } from '../types/errors.type';
 
 const router = Router();
 
@@ -57,7 +58,8 @@ router.delete(
     const user = parseUser(req.user);
     const reading = parseReading(req.reading);
     await user.removeReading(reading.id);
-    res.json({});
+    await readingService.deleteOne(reading);
+    res.status(StatusCodes.NO_CONTENT).end();
   })
 );
 

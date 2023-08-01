@@ -27,8 +27,8 @@ router.post(
   '/',
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const { username, name, password } = parseUserCreateInput(req.body);
-    await userService.addOne({ username, name, password });
-    const userWithTokens = await tokenizer.signTokens({ username, name });
+    const user = await userService.addOne({ username, name, password });
+    const userWithTokens = await tokenizer.signTokens({ username, name, id: user.id });
     res.status(StatusCodes.CREATED).json(userWithTokens);
   })
 );

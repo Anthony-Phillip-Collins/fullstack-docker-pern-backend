@@ -42,11 +42,16 @@ const getById = async (id: string | number): Promise<Reading | null> => {
   return await Reading.findByPk(id);
 };
 
+const deleteOne = async (reading: Reading): Promise<void> => {
+  await reading.destroy();
+};
+
 const readingService = {
   getAll,
   addOne,
   updateOne,
   getById,
+  deleteOne,
 };
 
 export default readingService;
