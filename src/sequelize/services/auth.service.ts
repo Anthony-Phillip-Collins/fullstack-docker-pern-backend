@@ -8,15 +8,16 @@ import getError from '../../types/utils/getError';
 const login = async (login: UserLogin): Promise<UserWithToken | null> => {
   const { username, password } = login;
   const user = await User.findOne({ where: { username } });
+  const error = getError({ message: 'Invalid username or password.', status: StatusCodes.UNAUTHORIZED });
 
   if (!user) {
-    throw getError({ message: 'User does not exist.', status: StatusCodes.NOT_FOUND });
+    throw error;
   }
 
   const passwordCorrect = await bcrypt.compare(password, user.hashedPassword);
 
   if (!passwordCorrect) {
-    throw getError({ message: 'Invalid username or password.', status: StatusCodes.UNAUTHORIZED });
+    throw error;
   }
 
   const userForToken: UserForToken = {
