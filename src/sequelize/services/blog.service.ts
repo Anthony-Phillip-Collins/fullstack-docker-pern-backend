@@ -19,6 +19,10 @@ const includes = {
   },
 };
 
+const attributesForGetAll = {
+  exclude: ['ownerId', 'createdAt', 'updatedAt'],
+};
+
 const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
   let where: WhereOptions<BlogAttributes> = {};
 
@@ -43,9 +47,7 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
   const blogs = await Blog.findAll({
     include: [includes.owner],
     order: [['likes', 'DESC']],
-    attributes: {
-      exclude: ['ownerId', 'createdAt', 'updatedAt'],
-    },
+    attributes: attributesForGetAll,
     where,
   });
 
@@ -53,12 +55,12 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
 };
 
 const getById = async (id: string): Promise<Blog | null> => {
-  return await Blog.findByPk(id, {
+  return Blog.findByPk(id, {
     include: [includes.owner, includes.readers],
   });
 };
 
-const addOne = async (newBlog: BlogCreation, user: User): Promise<Blog> => {
+const addOne = async (newBlog: BlogCreation, user: User): Promise<Blog | null> => {
   const { author, title } = newBlog;
   const exists = await Blog.findOne({ where: { author, title, ownerId: user.id } });
 
@@ -66,7 +68,13 @@ const addOne = async (newBlog: BlogCreation, user: User): Promise<Blog> => {
     throw getError({ message: 'Blog already exists!', status: StatusCodes.BAD_REQUEST });
   }
 
-  return await user.createBlog(newBlog);
+  await user.createBlog(newBlog);
+
+  return Blog.findOne({
+    where: { author, title, ownerId: user.id },
+    include: [includes.owner],
+    attributes: attributesForGetAll,
+  });
 };
 
 const deleteOne = async (blog: Blog, user: User): Promise<void> => {
