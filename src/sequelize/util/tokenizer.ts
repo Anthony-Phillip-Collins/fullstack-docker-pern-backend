@@ -14,7 +14,8 @@ const signAccessToken = (userForToken: UserForToken): Promise<string | undefined
         reject(
           getError({
             message: err?.message || 'Error signing access token.',
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            status: StatusCodes.UNAUTHORIZED,
+            name: err?.name,
           })
         );
       } else {
@@ -30,7 +31,8 @@ const verifyAccessToken = (token: string): Promise<string | jwt.JwtPayload | und
         reject(
           getError({
             message: err?.message || 'Error verifying access token.',
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            status: StatusCodes.UNAUTHORIZED,
+            name: err?.name,
           })
         );
       } else {

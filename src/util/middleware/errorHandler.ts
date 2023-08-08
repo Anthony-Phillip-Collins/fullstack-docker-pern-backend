@@ -1,45 +1,73 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorNames, ErrorResponse, StatusCodes } from '../../types/errors.type';
+import { ErrorNames, StatusCodes } from '../../types/errors.type';
 
-export const errorResponse = (message: string): ErrorResponse => {
-  return { error: { message } };
-};
 const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  let message = 'Something broke!';
-  let status = StatusCodes.INTERNAL_SERVER_ERROR;
+  let response: Error = {
+    message: 'Something broke!',
+    status: StatusCodes.INTERNAL_SERVER_ERROR,
+    name: ErrorNames.Error,
+  };
+
   if (error instanceof Error) {
     switch (error.name) {
       case ErrorNames.NotFound:
-        message = 'The requested resource doesn’t exists!';
-        status = StatusCodes.NOT_FOUND;
+        response = {
+          message: 'The requested resource doesn’t exists!',
+          status: StatusCodes.NOT_FOUND,
+          name: ErrorNames.NotFound,
+        };
         break;
       case ErrorNames.CastError:
-        message = 'Malformatted id!';
-        status = StatusCodes.BAD_REQUEST;
+        response = {
+          message: 'Malformatted id!',
+          status: StatusCodes.BAD_REQUEST,
+          name: ErrorNames.CastError,
+        };
         break;
       case ErrorNames.ValidationError:
-        message = 'Validation failed!';
-        status = StatusCodes.BAD_REQUEST;
+        response = {
+          message: 'Validation failed!',
+          status: StatusCodes.BAD_REQUEST,
+          name: ErrorNames.ValidationError,
+        };
         break;
       case ErrorNames.JsonWebTokenError:
-        message = 'Token missing or invalid!';
-        status = StatusCodes.UNAUTHORIZED;
+        response = {
+          message: 'Invalid token!',
+          status: StatusCodes.UNAUTHORIZED,
+          name: ErrorNames.JsonWebTokenError,
+        };
+        break;
+      case ErrorNames.TokenExpiredError:
+        response = {
+          message: 'Token expired!',
+          status: StatusCodes.UNAUTHORIZED,
+          name: ErrorNames.TokenExpiredError,
+        };
         break;
       case ErrorNames.Unauthorized:
-        message = 'User doesn’t have permissions to perform this action.';
-        status = StatusCodes.UNAUTHORIZED;
+        response = {
+          message: 'User doesn’t have permissions to perform this action.',
+          status: StatusCodes.UNAUTHORIZED,
+          name: ErrorNames.Unauthorized,
+        };
         break;
       case ErrorNames.NotInTestMode:
-        message = 'Access denied! App is not running in test-mode!';
-        status = StatusCodes.UNAUTHORIZED;
+        response = {
+          message: 'Access denied! App is not running in test-mode!',
+          status: StatusCodes.UNAUTHORIZED,
+          name: ErrorNames.NotInTestMode,
+        };
         break;
       default:
-        message = error.message || message;
-        status = error.status || status;
+        response = {
+          ...response,
+          ...error,
+        };
     }
   }
 
-  res.status(status).json(errorResponse(message));
+  res.status(response?.status || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: response });
 };
 
 export default errorHandler;
