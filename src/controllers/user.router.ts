@@ -55,7 +55,8 @@ router.put(
 
     if (userLoggedIn.admin) {
       update = parseUserUpdateAsAdminInput(req.body);
-      updated = await userService.updateOneAsAdmin(user, update);
+      // updated = await userService.updateOneAsAdmin(user, update); /* implement admin updates later */
+      updated = await userService.updateOneAsUser(user, update);
     } else {
       update = parseUserUpdateAsUserInput(req.body);
       updated = await userService.updateOneAsUser(user, update);
@@ -69,6 +70,9 @@ router.delete(
   userExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const user = parseUser(req.userOfSingleRoute);
+    if (user.username === 'admin@foobar.com') {
+      throw getError({ message: 'Cannot delete admin user!', status: StatusCodes.BAD_REQUEST });
+    }
     await user.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
   })
