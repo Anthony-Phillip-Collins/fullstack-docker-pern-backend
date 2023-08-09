@@ -9,9 +9,9 @@ import {
   UserUpdateAsUser,
   UserUpdateAsUserInput,
 } from '../../types/user.type';
+import getError from '../../types/utils/getError';
 import Blog from '../models/blog.model';
 import User, { UserOrNothing } from '../models/user.model';
-import getError from '../../types/utils/getError';
 
 const defaultQueryOptions = {
   attributes: {
@@ -96,9 +96,19 @@ const getByUsername = async (username: string): Promise<UserOrNothing> => {
   return await User.findOne({ ...singleQueryOptions, where: { username } });
 };
 
-const updateOneAsUser = async (user: User, updateFields: UserUpdateAsUserInput): Promise<UserOrNothing> => {
+const updateOneAsUser = async (user: User, updateFields: UserUpdateAsUserInput): Promise<User> => {
   const update: UserUpdateAsUser = await getUpdateAsUserFields(updateFields);
-  return await user.update(update);
+  await user.update(update);
+
+  const updated = await User.findByPk(user.id, {
+    ...defaultQueryOptions,
+  });
+
+  if (!updated) {
+    throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
+  }
+
+  return updated;
 };
 
 const updateOneAsAdmin = async (user: User, updateFields: UserUpdateAsAdminInput): Promise<UserOrNothing> => {

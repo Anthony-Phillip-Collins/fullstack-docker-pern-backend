@@ -1,9 +1,9 @@
 import { Op, WhereOptions } from 'sequelize';
-import { BlogAttributes, BlogCreation, BlogQuery } from '../../types/blog.type';
+import { BlogAttributes, BlogCreation, BlogQuery, BlogUpdate } from '../../types/blog.type';
 import { StatusCodes } from '../../types/errors.type';
+import getError from '../../types/utils/getError';
 import Blog from '../models/blog.model';
 import User from '../models/user.model';
-import getError from '../../types/utils/getError';
 
 const includes = {
   owner: {
@@ -14,13 +14,18 @@ const includes = {
   readers: {
     model: User,
     as: 'readers',
-    attributes: ['name'],
+    attributes: ['name', 'id'],
     through: { attributes: ['read'] },
   },
 };
 
-const attributesForGetAll = {
-  exclude: ['ownerId', 'createdAt', 'updatedAt'],
+const options = {
+  getAll: {
+    include: [includes.owner],
+    attributes: {
+      exclude: ['ownerId', 'createdAt', 'updatedAt'],
+    },
+  },
 };
 
 const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
@@ -45,9 +50,9 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
   }
 
   const blogs = await Blog.findAll({
-    include: [includes.owner],
+    include: options.getAll.include,
     order: [['likes', 'DESC']],
-    attributes: attributesForGetAll,
+    attributes: options.getAll.attributes,
     where,
   });
 
@@ -70,11 +75,30 @@ const addOne = async (newBlog: BlogCreation, user: User): Promise<Blog | null> =
 
   await user.createBlog(newBlog);
 
+  const { include, attributes } = options.getAll;
+
   return Blog.findOne({
     where: { author, title, ownerId: user.id },
-    include: [includes.owner],
-    attributes: attributesForGetAll,
+    include,
+    attributes,
   });
+};
+
+const updateOne = async (blog: Blog, update: BlogUpdate): Promise<Blog> => {
+  await blog.update(update);
+
+  const { include, attributes } = options.getAll;
+
+  const updated = await Blog.findByPk(blog.id, {
+    include,
+    attributes,
+  });
+
+  if (!updated) {
+    throw getError({ message: 'Blog not found!', status: StatusCodes.NOT_FOUND });
+  }
+
+  return updated;
 };
 
 const deleteOne = async (blog: Blog, user: User): Promise<void> => {
@@ -92,6 +116,7 @@ const blogService = {
   getAll,
   getById,
   addOne,
+  updateOne,
   deleteOne,
 };
 

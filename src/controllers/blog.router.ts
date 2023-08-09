@@ -45,8 +45,8 @@ router.put(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(req.blog);
     const update = parseUpdateBlog(req.body);
-    await blog.update(update);
-    res.json(blog);
+    const updatedBlog = await blogService.updateOne(blog, update);
+    res.json(updatedBlog);
   })
 );
 
