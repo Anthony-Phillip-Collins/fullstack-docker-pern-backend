@@ -24,7 +24,9 @@ const extract = (adminOnly?: boolean) =>
       const isSingleUserRoute = isUserRoute && (id || username);
 
       if (req.user.disabled) {
-        return next(getError({ message: 'User is disabled!', status: StatusCodes.UNAUTHORIZED }));
+        return next(
+          getError({ message: 'User is disabled!', status: StatusCodes.UNAUTHORIZED, name: ErrorNames.UserDisabled })
+        );
       }
 
       if (!req.user.admin && adminOnly) {
