@@ -73,6 +73,25 @@ export const userInit = (sequelize: Sequelize) => {
       name: {
         type: new DataTypes.STRING(128),
         allowNull: false,
+        validate: {
+          notEmpty: {
+            msg: 'Name is required!',
+          },
+
+          notNull: {
+            msg: 'Name is required!',
+          },
+
+          len: {
+            args: [3, 128],
+            msg: 'Name must be between 3 and 128 characters long!',
+          },
+
+          is: {
+            args: /^[a-z ,.'-]+$/i,
+            msg: 'Name must contain only letters!',
+          },
+        },
       },
       username: {
         type: new DataTypes.STRING(128),

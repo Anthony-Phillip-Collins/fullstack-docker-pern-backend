@@ -64,10 +64,62 @@ export const blogInit = (sequelize: Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      title: { type: DataTypes.STRING(128), allowNull: false },
-      author: { type: DataTypes.STRING(128), allowNull: false },
-      url: { type: DataTypes.STRING(128), allowNull: false },
-      likes: { type: DataTypes.INTEGER, allowNull: false },
+      title: {
+        type: DataTypes.STRING(128),
+        validate: {
+          notEmpty: {
+            msg: 'Title cannot be empty',
+          },
+
+          len: {
+            args: [3, 128],
+            msg: 'Title must be between 3 and 128 characters long',
+          },
+        },
+      },
+      author: {
+        type: DataTypes.STRING(128),
+        validate: {
+          notEmpty: {
+            msg: 'Author cannot be empty',
+          },
+
+          len: {
+            args: [3, 128],
+            msg: 'Author must be between 3 and 128 characters long',
+          },
+        },
+      },
+      url: {
+        type: DataTypes.STRING(128),
+        validate: {
+          notEmpty: {
+            msg: 'Url cannot be empty',
+          },
+          isUrl: {
+            msg: 'Url must be a valid url',
+          },
+        },
+      },
+      likes: {
+        type: DataTypes.INTEGER,
+        validate: {
+          min: {
+            args: [0],
+            msg: 'Likes must be greater than 0',
+          },
+
+          isInt: {
+            msg: 'Likes must be an integer',
+          },
+
+          notEmpty: {
+            msg: 'Likes cannot be empty',
+          },
+
+          notNull: false,
+        },
+      },
       year: {
         type: DataTypes.INTEGER,
         allowNull: false,
