@@ -86,11 +86,6 @@ export const userInit = (sequelize: Sequelize) => {
             args: [3, 128],
             msg: 'Name must be between 3 and 128 characters long!',
           },
-
-          is: {
-            args: /^[a-z ,.'-]+$/i,
-            msg: 'Name must contain only letters!',
-          },
         },
       },
       username: {
