@@ -30,7 +30,7 @@ const extract = (adminOnly?: boolean) =>
       }
 
       if (!req.user.admin && adminOnly) {
-        return next(getError({ message: 'User is not admin!', status: StatusCodes.UNAUTHORIZED }));
+        return next(getError({ message: 'Only an admin can perform this action!', status: StatusCodes.UNAUTHORIZED }));
       }
 
       if (isSingleUserRoute) {

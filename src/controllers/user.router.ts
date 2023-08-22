@@ -9,7 +9,7 @@ import {
   parseUserUpdateAsAdminInput,
   parseUserUpdateAsUserInput,
 } from '../types/utils/parsers/user.parser';
-import { userExtractor } from '../util/middleware/userExtractor';
+import { adminExtractor, userExtractor } from '../util/middleware/userExtractor';
 import tokenizer from '../sequelize/util/tokenizer';
 import getError from '../types/utils/getError';
 
@@ -25,6 +25,7 @@ router.get(
 
 router.post(
   '/',
+  adminExtractor,
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const data = parseUserCreateInput(req.body);
     const { username, name, password } = data;
