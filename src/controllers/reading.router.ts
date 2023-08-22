@@ -15,7 +15,7 @@ router.get(
     const query = parseReadingQuery(req.query);
     const readings = await readingService.getAll(query);
     res.json(readings);
-  })
+  }),
 );
 
 router.post(
@@ -26,7 +26,7 @@ router.post(
     const data = parseReadingCreation({ ...req.body, userId: user.id });
     const reading = await readingService.addOne(data);
     res.json(reading);
-  })
+  }),
 );
 
 router.get(
@@ -35,7 +35,7 @@ router.get(
   asyncHandler((req, res) => {
     const reading = parseReading(req.reading);
     res.json(reading);
-  })
+  }),
 );
 
 router.put(
@@ -47,7 +47,7 @@ router.put(
     const update = parseReadingUpdate(req.body);
     await readingService.updateOne(reading, update);
     res.json(reading);
-  })
+  }),
 );
 
 router.delete(
@@ -60,7 +60,7 @@ router.delete(
     await user.removeReading(reading.id);
     await readingService.deleteOne(reading);
     res.status(StatusCodes.NO_CONTENT).end();
-  })
+  }),
 );
 
 const readingRouter = router;

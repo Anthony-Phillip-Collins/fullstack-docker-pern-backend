@@ -17,7 +17,7 @@ router.post(
     const { username, password } = parseUserLogin(req.body);
     const userWithToken = await authService.login({ username, password });
     res.json(userWithToken);
-  })
+  }),
 );
 
 router.post(
@@ -27,7 +27,7 @@ router.post(
     const user = parseUser(req.user);
     await authService.logout(user.username);
     res.sendStatus(StatusCodes.NO_CONTENT);
-  })
+  }),
 );
 
 router.post(
@@ -48,7 +48,7 @@ router.post(
     const userWithToken = await tokenizer.signTokens(userForToken);
 
     res.json(userWithToken);
-  })
+  }),
 );
 
 const loginRouter = router;

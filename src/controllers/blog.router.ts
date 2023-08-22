@@ -15,7 +15,7 @@ router.get(
     const query = parseBlogQuery(_req.query);
     const blogs = await blogService.getAll(query);
     res.json(blogs);
-  })
+  }),
 );
 
 router.post(
@@ -26,7 +26,7 @@ router.post(
     const user = parseUser(req.user);
     const blog = await blogService.addOne(newBlog, user);
     res.status(StatusCodes.CREATED).json(blog);
-  })
+  }),
 );
 
 router.get(
@@ -35,7 +35,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const blog = parseBlog(await blogService.getById(req.params.id));
     res.json(blog);
-  })
+  }),
 );
 
 router.put(
@@ -47,7 +47,7 @@ router.put(
     const update = parseUpdateBlog(req.body);
     const updatedBlog = await blogService.updateOne(blog, update);
     res.json(updatedBlog);
-  })
+  }),
 );
 
 router.delete(
@@ -59,7 +59,7 @@ router.delete(
     const user = parseUser(req.user);
     await blogService.deleteOne(blog, user);
     res.status(StatusCodes.NO_CONTENT).json({});
-  })
+  }),
 );
 
 const blogRouter = router;

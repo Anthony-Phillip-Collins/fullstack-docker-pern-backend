@@ -47,7 +47,7 @@ export const readingInit = (sequelize: Sequelize) => {
       modelName: 'reading',
       timestamps: false,
       underscored: true,
-    }
+    },
   );
 
   return Reading;

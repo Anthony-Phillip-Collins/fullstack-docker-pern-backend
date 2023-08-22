@@ -16,7 +16,7 @@ const signAccessToken = (userForToken: UserForToken): Promise<string | undefined
             message: err?.message || 'Error signing access token.',
             status: StatusCodes.UNAUTHORIZED,
             name: err?.name,
-          })
+          }),
         );
       } else {
         resolve(token);
@@ -33,7 +33,7 @@ const verifyAccessToken = (token: string): Promise<string | jwt.JwtPayload | und
             message: err?.message || 'Error verifying access token.',
             status: StatusCodes.UNAUTHORIZED,
             name: err?.name,
-          })
+          }),
         );
       } else {
         resolve(decoded);

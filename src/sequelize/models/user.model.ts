@@ -116,7 +116,7 @@ export const userInit = (sequelize: Sequelize) => {
       tableName: 'users',
       underscored: true,
       timestamps: true,
-    }
+    },
   );
   return User;
 };

@@ -20,7 +20,7 @@ router.get(
   asyncHandler(async (_req: Request, res: Response, _next: NextFunction) => {
     const users = await userService.getAll();
     res.json(users);
-  })
+  }),
 );
 
 router.post(
@@ -31,7 +31,7 @@ router.post(
     const user = await userService.addOne({ username, name, password });
     const userWithTokens = await tokenizer.signTokens({ username, name, id: user.id });
     res.status(StatusCodes.CREATED).json(userWithTokens);
-  })
+  }),
 );
 
 router.get(
@@ -43,7 +43,7 @@ router.get(
       throw getError({ message: 'User not found!', status: StatusCodes.NOT_FOUND });
     }
     res.json(user);
-  })
+  }),
 );
 
 router.put(
@@ -63,7 +63,7 @@ router.put(
       updated = await userService.updateOneAsUser(user, update);
     }
     res.json(updated);
-  })
+  }),
 );
 
 router.delete(
@@ -76,7 +76,7 @@ router.delete(
     }
     await user.destroy();
     res.status(StatusCodes.NO_CONTENT).json({});
-  })
+  }),
 );
 
 const userRouter = router;

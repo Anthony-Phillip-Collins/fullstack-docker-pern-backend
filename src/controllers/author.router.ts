@@ -26,7 +26,7 @@ router.get(
     const authors = blogs.map((blog) => blog.toJSON());
 
     res.send(authors);
-  })
+  }),
 );
 
 const authorRouter = router;

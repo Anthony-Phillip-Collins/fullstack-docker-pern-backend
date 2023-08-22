@@ -25,7 +25,7 @@ const extract = (adminOnly?: boolean) =>
 
       if (req.user.disabled) {
         return next(
-          getError({ message: 'User is disabled!', status: StatusCodes.UNAUTHORIZED, name: ErrorNames.UserDisabled })
+          getError({ message: 'User is disabled!', status: StatusCodes.UNAUTHORIZED, name: ErrorNames.UserDisabled }),
         );
       }
 

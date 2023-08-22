@@ -149,7 +149,7 @@ export const blogInit = (sequelize: Sequelize) => {
       tableName: 'blogs',
       underscored: true,
       timestamps: true,
-    }
+    },
   );
 
   return Blog;
