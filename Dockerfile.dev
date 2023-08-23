@@ -1,4 +1,4 @@
-FROM node:16.20.1-bullseye-slim
+FROM node:bullseye-slim AS base
 
 ARG APP_PATH=/usr/src/app/
 
