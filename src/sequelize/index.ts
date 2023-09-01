@@ -8,11 +8,11 @@ import {
   Sequelize,
 } from 'sequelize';
 import { SequelizeStorage, Umzug } from 'umzug';
+import { IS_PRODUCTION, IS_TEST } from '../config';
 import logger from '../util/logger';
 import Blog, { blogInit } from './models/blog.model';
 import Reading, { readingInit } from './models/reading.model';
 import User, { userInit } from './models/user.model';
-import { IS_PRODUCTION } from '../config';
 
 const initModels = async (sequelize: Sequelize) => {
   const models = [userInit, blogInit, readingInit];
@@ -70,9 +70,13 @@ const initMigrations = (sequelize: Sequelize) => {
 };
 
 const getSequelizeOptions = () => {
+  const options = {
+    logging: IS_TEST ? false : console.log,
+  };
+
   // check if we are running on heroku (DYNO) otherwise local development
   const herokuOptions = { ssl: { require: true, rejectUnauthorized: false } };
-  return IS_PRODUCTION ? { dialectOptions: herokuOptions } : {};
+  return IS_PRODUCTION ? { ...options, dialectOptions: herokuOptions } : options;
 };
 
 const authenticate = async (): Promise<void> => {

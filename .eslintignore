@@ -4,3 +4,5 @@ dist
 coverage
 docker-entrypoint-initdb.d/**/*.js
 cli.js
+jest.config.js
+__tests__
