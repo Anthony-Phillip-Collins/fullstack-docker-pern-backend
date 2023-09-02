@@ -32,7 +32,7 @@
     "docker:dev:test": "docker exec -it dev.backend npm run test",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
     "pre-commit": "npx lint-staged && npm run tsc",
-    "pre-push": "echo \"Todo: implement test with pre-push!\""
+    "pre-push": "./test.sh"
   },
   "author": "Anthony Collins",
   "license": "ISC",
