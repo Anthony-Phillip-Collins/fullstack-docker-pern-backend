@@ -29,10 +29,10 @@
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down --remove-orphans",
     "docker:dev:ps": "docker compose -f docker-compose.dev.yml ps -a",
     "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.backend:4000",
-    "docker:dev:test": "docker exec -it dev.backend npm run test",
+    "docker:dev:test": "docker exec -t dev.backend npm run test",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
     "pre-commit": "npx lint-staged && npm run tsc",
-    "pre-push": "./test.sh"
+    "pre-push": "docker exec -t dev.backend npm run test"
   },
   "author": "Anthony Collins",
   "license": "ISC",
