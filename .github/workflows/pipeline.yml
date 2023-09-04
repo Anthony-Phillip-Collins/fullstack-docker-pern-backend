@@ -1,49 +1,58 @@
-name: PostgreSQL Service Example
-on: push
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
 
 jobs:
-  # Label of the runner job
-  runner-job:
-    # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-latest
-
-    # Service containers to run with `runner-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
+  run_tests:
+    runs-on: ubuntu-20.04
     steps:
-      # Downloads a copy of the code in your repository before running CI tests
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.FULLSTACK_DOCKER_PERN || github.token }}
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.0'
       - name: Install dependencies
         run: npm ci
+      - name: Run Eslint
+        run: npm run lint
+      - name: build
+        run: npm run build
 
-      - name: Connect to PostgreSQL
-        # Runs a script that creates a PostgreSQL table, populates
-        # the table with data, and then retrieves the data
-        run: node client.js
-        # Environment variables used by the `client.js` script to create
-        # a new PostgreSQL table.
+  deploy:
+    if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
+    needs: run_tests
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: fullstack-docker-pern-backend
+          heroku_email: anthony.phillip.collins@gmail.com
+          dontuseforce: true
+          dontautocreate: true
+
+  tag_release:
+    if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42 # using commit hash instead of git-tag is future-proof
         env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: localhost
-          # The default PostgreSQL port
-          POSTGRES_PORT: 5432
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          WITH_V: true
