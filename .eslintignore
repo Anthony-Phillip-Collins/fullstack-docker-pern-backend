@@ -6,3 +6,4 @@ docker-entrypoint-initdb.d/**/*.js
 cli.js
 jest.config.js
 __tests__
+client.js

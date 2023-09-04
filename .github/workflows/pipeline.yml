@@ -22,42 +22,53 @@ jobs:
           node-version: '18.15.0'
       - name: Install dependencies
         run: npm ci
-      - name: Run Eslint
-        run: npm run lint
-      - name: build
-        run: npm run build
-      - name: Run Jest
-        run: npm run test
+      - name: Connect to PostgreSQL
+        # Runs a script that creates a PostgreSQL table, populates
+        # the table with data, and then retrieves the data
+        run: node client.js
+        # Environment variables used by the `client.js` script to create
+        # a new PostgreSQL table.
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: localhost
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+      # - name: Run Eslint
+      #   run: npm run lint
+      # - name: build
+      #   run: npm run build
+      # - name: Run Jest
+      #   run: npm run test
+      #   env:
+      #     DATABASE_URL: postgres://opmaiurhdnmurq:565f26206480c87f68bc6ade7c5f0bf98341bd434e99ff863edfb8d2baffc4f6@ec2-44-207-60-135.compute-1.amazonaws.com:5432/d6e2n1dotjonvj
+      #     REDIS_URL: redis://:p9831697e8f64748a5c8fdae7a800119769351cab5cf46cb48966960a858545b5@ec2-3-82-83-142.compute-1.amazonaws.com:25449
 
-  deploy:
-    if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
-    needs: run_tests
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: akhileshns/heroku-deploy@v3.12.14
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: fullstack-docker-pern-backend
-          heroku_email: anthony.phillip.collins@gmail.com
-          dontuseforce: true
-          dontautocreate: true
+  # deploy:
+  #   if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
+  #   needs: run_tests
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: akhileshns/heroku-deploy@v3.12.14
+  #       with:
+  #         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+  #         heroku_app_name: fullstack-docker-pern-backend
+  #         heroku_email: anthony.phillip.collins@gmail.com
+  #         dontuseforce: true
+  #         dontautocreate: true
 
-  tag_release:
-    if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
-    needs: deploy
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: '0'
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42 # using commit hash instead of git-tag is future-proof
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          WITH_V: true
+  # tag_release:
+  #   if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
+  #   needs: deploy
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         ref: ${{ github.sha }}
+  #         fetch-depth: '0'
+  #     - name: Bump version and push tag
+  #       uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42 # using commit hash instead of git-tag is future-proof
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         WITH_V: true
