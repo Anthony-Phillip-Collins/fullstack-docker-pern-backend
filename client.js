@@ -7,7 +7,6 @@ try {
     user: 'postgres',
     password: 'postgres',
     database: 'postgres',
-    // connectionString: process.env.DATABASE_URL,
   });
 
   pgclient.connect();

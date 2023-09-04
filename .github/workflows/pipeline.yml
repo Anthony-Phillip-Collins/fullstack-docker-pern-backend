@@ -1,27 +1,41 @@
-name: Deployment pipeline
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-    types: [opened, synchronize]
+name: PostgreSQL Service Example
+on: push
 
 jobs:
-  run_tests:
-    runs-on: ubuntu-20.04
+  # Label of the runner job
+  runner-job:
+    # You must use a Linux environment when using service containers or container jobs
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.FULLSTACK_DOCKER_PERN || github.token }}
-          submodules: recursive
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.15.0'
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install dependencies
-        run: npm ci
+        run: npm i
+
       - name: Connect to PostgreSQL
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data
@@ -33,42 +47,3 @@ jobs:
           POSTGRES_HOST: localhost
           # The default PostgreSQL port
           POSTGRES_PORT: 5432
-      # - name: Run Eslint
-      #   run: npm run lint
-      # - name: build
-      #   run: npm run build
-      # - name: Run Jest
-      #   run: npm run test
-      #   env:
-      #     DATABASE_URL: postgres://opmaiurhdnmurq:565f26206480c87f68bc6ade7c5f0bf98341bd434e99ff863edfb8d2baffc4f6@ec2-44-207-60-135.compute-1.amazonaws.com:5432/d6e2n1dotjonvj
-      #     REDIS_URL: redis://:p9831697e8f64748a5c8fdae7a800119769351cab5cf46cb48966960a858545b5@ec2-3-82-83-142.compute-1.amazonaws.com:25449
-
-  # deploy:
-  #   if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
-  #   needs: run_tests
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: akhileshns/heroku-deploy@v3.12.14
-  #       with:
-  #         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-  #         heroku_app_name: fullstack-docker-pern-backend
-  #         heroku_email: anthony.phillip.collins@gmail.com
-  #         dontuseforce: true
-  #         dontautocreate: true
-
-  # tag_release:
-  #   if: ${{ (github.event_name == 'push' || github.event.pull_request.merged == true) && (!contains( join(github.event.commits.*.message), '#skip') && !github.event.act) }}
-  #   needs: deploy
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         ref: ${{ github.sha }}
-  #         fetch-depth: '0'
-  #     - name: Bump version and push tag
-  #       uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42 # using commit hash instead of git-tag is future-proof
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         DEFAULT_BUMP: patch
-  #         WITH_V: true
