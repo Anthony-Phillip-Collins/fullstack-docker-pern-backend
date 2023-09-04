@@ -15,6 +15,7 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "tsc",
+    "build": "tsc",
     "dev": "ts-node-dev index.ts",
     "lint": "eslint --ext .ts .",
     "start": "node build/index.js",
@@ -30,9 +31,10 @@
     "docker:dev:ps": "docker compose -f docker-compose.dev.yml ps -a",
     "docker:dev:debug": "docker compose -f docker-compose.dev.yml run --rm dev.debug-helper wget -O - http://dev.backend:4000",
     "docker:dev:test": "docker exec -t dev.backend npm run test",
+    "act": "act push -e event.json -W .github/workflows/pipeline.yml",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
     "pre-commit": "npx lint-staged && npm run tsc",
-    "pre-push": "docker exec -t dev.backend npm run test"
+    "pre-push": "npm run test"
   },
   "author": "Anthony Collins",
   "license": "ISC",

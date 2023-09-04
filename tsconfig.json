@@ -13,6 +13,6 @@
     "skipLibCheck": true,
     "typeRoots": ["@types", "node_modules/@types"]
   },
-  "include": ["src/**/*", "index.ts", "@types", "db/**/*.ts", "__tests__/index.spec.ts"],
-  "exclude": ["node_modules", "docker-entrypoint-initdb.d", "build", "__tests__"]
+  "include": ["src/**/*", "index.ts", "@types", "db/**/*.ts", "__tests__"],
+  "exclude": ["node_modules", "docker-entrypoint-initdb.d", "build"]
 }

@@ -22,10 +22,6 @@ const init = async () => {
 
   app.use(unknownEndpoint);
   app.use(errorHandler);
-
-  // app.listen(PORT, () => {
-  //   logger.info(`Server running on port ${PORT}`);
-  // });
 };
 
 init()

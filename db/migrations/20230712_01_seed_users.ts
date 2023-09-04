@@ -35,6 +35,6 @@ export const down: Migration = async ({ context: queryInterface }: Context): Pro
         [Op.in]: [true, false],
       },
     },
-    {}
+    {},
   );
 };

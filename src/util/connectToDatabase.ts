@@ -1,6 +1,13 @@
+import { API_BASE_URL, DATABASE_URL, REDIS_URL } from '../config';
 import redis from '../redis';
 import connectToPostgres from '../sequelize';
 import logger from './logger';
+
+console.log('//////////////////////////////////////////');
+console.log('API_BASE_URL', API_BASE_URL);
+console.log('DATABASE_URL', DATABASE_URL);
+console.log('REDIS_URL', REDIS_URL);
+console.log('//////////////////////////////////////////');
 
 const connectToDatabase = async () => {
   try {
