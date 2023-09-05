@@ -1,6 +1,7 @@
-import { UserAttributes, UserCreateInput, UserUpdateAsUserInput, UserWithToken } from '../../src/types/user.type';
+import { UserAttributes, UserCreateInput, UserUpdateAsUserInput, UserWithToken } from '../../../src/types/user.type';
 import testHelper from '../util/testHelper';
-import { api } from '../index.spec';
+import { api } from '../../index.spec';
+import userMock from '../mock/user.mock';
 
 let testUser: UserAttributes;
 
@@ -9,11 +10,7 @@ const userTest = () => {
     it('should create a user', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
 
-      const data: UserCreateInput = {
-        username: 'test@foobar.com',
-        name: 'Test User',
-        password: 'letmein',
-      };
+      const data = userMock.user;
 
       const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(201);
@@ -30,11 +27,7 @@ const userTest = () => {
     it('should fail with status 400 if trying to create a user that exists', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
 
-      const data: UserCreateInput = {
-        username: 'test@foobar.com',
-        name: 'Test User',
-        password: 'letmein',
-      };
+      const data: UserCreateInput = { ...userMock.user, username: 'test@foobar.com' };
 
       const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(400);
@@ -43,11 +36,7 @@ const userTest = () => {
     it('should fail with status 400 if trying to create a user with invalid data', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
 
-      const data: UserCreateInput = {
-        username: 'invalid-email',
-        name: 'Test User',
-        password: 'letmein',
-      };
+      const data: UserCreateInput = { ...userMock.user, username: 'invalid-email' };
 
       const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(400);

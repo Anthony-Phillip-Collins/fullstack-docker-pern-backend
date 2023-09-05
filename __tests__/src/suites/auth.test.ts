@@ -1,4 +1,4 @@
-import { UserWithToken } from '../../src/types/user.type';
+import { UserWithToken } from '../../../src/types/user.type';
 import testHelper from '../util/testHelper';
 
 const authTest = () => {

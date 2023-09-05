@@ -1,10 +1,10 @@
 import supertest from 'supertest';
 import app from '../src/app';
 import connectToDatabase from '../src/util/connectToDatabase';
-import authTest from './suites/auth.test';
-import blogTest from './suites/blog.test';
-import userTest from './suites/user.test';
-import testHelper from './util/testHelper';
+import authTest from './src/suites/auth.test';
+import blogTest from './src/suites/blog.test';
+import userTest from './src/suites/user.test';
+import testHelper from './src/util/testHelper';
 
 export const api = supertest(app);
 
