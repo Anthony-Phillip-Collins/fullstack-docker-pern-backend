@@ -3,12 +3,12 @@ import { config } from 'dotenv';
 export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 export const IS_TEST = process.env.NODE_ENV === 'test';
 
+config();
+
 if (IS_TEST) {
   config({
     path: '.env.test',
   });
-} else {
-  config();
 }
 
 export const PORT = process.env.PORT || 4000;
