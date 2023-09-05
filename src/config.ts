@@ -7,7 +7,7 @@ config();
 
 if (IS_TEST) {
   config({
-    path: '.env.test',
+    path: '.env.local',
   });
 }
 
