@@ -1,9 +1,7 @@
-import supertest, { Response } from 'supertest';
-import app from '../app';
-import User from '../sequelize/models/user.model';
-import { UserLogin, UserWithToken } from '../types/user.type';
-
-const request = supertest(app);
+import { Response } from 'supertest';
+import User from '../../src/sequelize/models/user.model';
+import { UserLogin, UserWithToken } from '../../src/types/user.type';
+import { api } from '../index.spec';
 
 const cleanup = async () =>
   await User.destroy({
@@ -13,7 +11,7 @@ const cleanup = async () =>
   });
 
 const login = async (data: UserLogin): Promise<Response> => {
-  const response = await request.post('/api/auth/login').send(data);
+  const response = await api.post('/api/auth/login').send(data);
   expect(response.status).toBe(200);
 
   const user = response.body as UserWithToken;

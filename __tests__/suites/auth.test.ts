@@ -1,14 +1,8 @@
 import { UserWithToken } from '../../src/types/user.type';
-import connectToDatabase from '../../src/util/connectToDatabase';
-import testHelper from '../../src/util/testHelper';
+import testHelper from '../util/testHelper';
 
 const authTest = () => {
-  beforeAll(async () => {
-    await connectToDatabase();
-    await testHelper.cleanup();
-  });
-
-  describe('Auth routes', () => {
+  describe('Verify', () => {
     it('should log in as admin', async () => {
       const response = await testHelper.loginAsAdmin();
       expect(response.status).toBe(200);

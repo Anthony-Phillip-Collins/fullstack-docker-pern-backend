@@ -1,28 +1,11 @@
-import supertest from 'supertest';
-import app from '../../src/app';
 import { UserAttributes, UserCreateInput, UserUpdateAsUserInput, UserWithToken } from '../../src/types/user.type';
-import connectToDatabase from '../../src/util/connectToDatabase';
-import testHelper from '../../src/util/testHelper';
+import testHelper from '../util/testHelper';
+import { api } from '../index.spec';
 
-const request = supertest(app);
 let testUser: UserAttributes;
 
 const userTest = () => {
-  beforeAll(async () => {
-    await connectToDatabase();
-    await testHelper.cleanup();
-  });
-
-  describe('User routes', () => {
-    it('should have an admin', async () => {
-      const response = await request.get('/api/users').expect(200);
-      const users: UserAttributes[] = response.body;
-      expect(users.length).toBeGreaterThanOrEqual(1);
-
-      const admin = users.find((user) => user.username === 'admin@foobar.com');
-      expect(admin).toBeDefined();
-    });
-
+  describe('Create', () => {
     it('should create a user', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
 
@@ -32,7 +15,7 @@ const userTest = () => {
         password: 'letmein',
       };
 
-      const response = await request.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
+      const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(201);
 
       const user: UserAttributes = response.body;
@@ -44,38 +27,6 @@ const userTest = () => {
       testUser = user;
     });
 
-    it('should get a user', async () => {
-      const response = await request.get(`/api/users/${testUser.id}`);
-      expect(response.status).toBe(200);
-
-      const user: UserAttributes = response.body;
-      expect(user).toBeDefined();
-      expect(user.id).toBe(testUser.id);
-      expect(user.username).toBe(testUser.username);
-      expect(user.name).toBe(testUser.name);
-    });
-
-    it('should update a user', async () => {
-      const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
-
-      const data: UserUpdateAsUserInput = {
-        name: 'New Name',
-      };
-
-      const response = await request
-        .put(`/api/users/${testUser.username}`)
-        .send(data)
-        .set('Authorization', `Bearer ${accessToken}`);
-
-      expect(response.status).toBe(200);
-
-      const user: UserAttributes = response.body;
-      expect(user).toBeDefined();
-      expect(user.id).toBe(testUser.id);
-      expect(user.username).toBe(testUser.username);
-      expect(user.name).toBe(data.name);
-    });
-
     it('should fail with status 400 if trying to create a user that exists', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
 
@@ -85,7 +36,7 @@ const userTest = () => {
         password: 'letmein',
       };
 
-      const response = await request.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
+      const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(400);
     });
 
@@ -98,13 +49,60 @@ const userTest = () => {
         password: 'letmein',
       };
 
-      const response = await request.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
+      const response = await api.post('/api/users').send(data).set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(400);
     });
+  });
 
+  describe('Read', () => {
+    it('should have an admin', async () => {
+      const response = await api.get('/api/users').expect(200);
+      const users: UserAttributes[] = response.body;
+      expect(users.length).toBeGreaterThanOrEqual(1);
+
+      const admin = users.find((user) => user.username === 'admin@foobar.com');
+      expect(admin).toBeDefined();
+    });
+
+    it('should get a user', async () => {
+      const response = await api.get(`/api/users/${testUser.id}`);
+      expect(response.status).toBe(200);
+
+      const user: UserAttributes = response.body;
+      expect(user).toBeDefined();
+      expect(user.id).toBe(testUser.id);
+      expect(user.username).toBe(testUser.username);
+      expect(user.name).toBe(testUser.name);
+    });
+  });
+
+  describe('Update', () => {
+    it('should update a user', async () => {
+      const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
+
+      const data: UserUpdateAsUserInput = {
+        name: 'New Name',
+      };
+
+      const response = await api
+        .put(`/api/users/${testUser.username}`)
+        .send(data)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(200);
+
+      const user: UserAttributes = response.body;
+      expect(user).toBeDefined();
+      expect(user.id).toBe(testUser.id);
+      expect(user.username).toBe(testUser.username);
+      expect(user.name).toBe(data.name);
+    });
+  });
+
+  describe('Delete', () => {
     it('should delete a user', async () => {
       const { accessToken } = (await testHelper.loginAsAdmin()).body as UserWithToken;
-      const response = await request
+      const response = await api
         .delete(`/api/users/${testUser.username}`)
         .set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(204);
