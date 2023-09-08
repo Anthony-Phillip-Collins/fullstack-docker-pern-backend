@@ -17,6 +17,12 @@ const includes = {
     attributes: ['name', 'id'],
     through: { attributes: ['read'] },
   },
+  likers: {
+    model: User,
+    as: 'likers',
+    attributes: ['name', 'id'],
+    through: { attributes: ['id'] },
+  },
 };
 
 const options = {
@@ -51,7 +57,7 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
 
   const blogs = await Blog.findAll({
     include: options.getAll.include,
-    order: [['likes', 'DESC']],
+    order: [['id', 'DESC']],
     attributes: options.getAll.attributes,
     where,
   });
@@ -61,7 +67,7 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
 
 const getById = async (id: string): Promise<Blog | null> => {
   return Blog.findByPk(id, {
-    include: [includes.owner, includes.readers],
+    include: [includes.owner, includes.readers, includes.likers],
   });
 };
 

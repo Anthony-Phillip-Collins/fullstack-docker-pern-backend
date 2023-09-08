@@ -1,6 +1,7 @@
 import { StatusCodes } from '../../types/errors.type';
 import getError from '../../types/utils/getError';
 import Blog from '../models/blog.model';
+import Like from '../models/like.model';
 import Reading from '../models/reading.model';
 import User from '../models/user.model';
 
@@ -21,6 +22,13 @@ export const parseUser = (object: unknown): User => {
 export const parseReading = (object: unknown): Reading => {
   if (!(object instanceof Reading)) {
     throw getError({ message: 'Reading not found!', status: StatusCodes.NOT_FOUND });
+  }
+  return object;
+};
+
+export const parseLike = (object: unknown): Like => {
+  if (!(object instanceof Like)) {
+    throw getError({ message: 'Like not found!', status: StatusCodes.NOT_FOUND });
   }
   return object;
 };

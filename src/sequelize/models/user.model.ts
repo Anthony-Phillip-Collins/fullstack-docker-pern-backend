@@ -18,6 +18,7 @@ import {
 } from 'sequelize';
 import { UserAttributes, UserCreate } from '../../types/user.type';
 import Blog from './blog.model';
+import Like from './like.model';
 import Reading from './reading.model';
 
 export type UserOrNothing = User | null | undefined;
@@ -56,9 +57,22 @@ class User extends Model<UserAttributes, UserCreate> {
   declare countReadings: HasManyCountAssociationsMixin;
   declare createReading: HasManyCreateAssociationMixin<Reading, 'userId'>;
 
+  declare likings?: NonAttribute<Like[]>;
+  declare getLikings: HasManyGetAssociationsMixin<Like>;
+  declare addLiking: HasManyAddAssociationMixin<Like, number>;
+  declare addLikings: HasManyAddAssociationsMixin<Like, number>;
+  declare setLikings: HasManySetAssociationsMixin<Like, number>;
+  declare removeLiking: HasManyRemoveAssociationMixin<Like, number>;
+  declare removeLikings: HasManyRemoveAssociationsMixin<Like, number>;
+  declare hasLiking: HasManyHasAssociationMixin<Like, number>;
+  declare hasLikings: HasManyHasAssociationsMixin<Like, number>;
+  declare countLikings: HasManyCountAssociationsMixin;
+  declare createLiking: HasManyCreateAssociationMixin<Like, 'userId'>;
+
   declare static associations: {
     blogs: Association<User, Blog>;
     readings: Association<User, Blog>;
+    likings: Association<User, Blog>;
   };
 }
 

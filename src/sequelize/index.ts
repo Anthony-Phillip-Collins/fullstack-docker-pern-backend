@@ -11,11 +11,12 @@ import { SequelizeStorage, Umzug } from 'umzug';
 import { IS_PRODUCTION, IS_TEST } from '../config';
 import logger from '../util/logger';
 import Blog, { blogInit } from './models/blog.model';
+import Like, { likesInit } from './models/like.model';
 import Reading, { readingInit } from './models/reading.model';
 import User, { userInit } from './models/user.model';
 
 const initModels = async (sequelize: Sequelize) => {
-  const models = [userInit, blogInit, readingInit];
+  const models = [userInit, blogInit, readingInit, likesInit];
   const sync = models.map((model) => model(sequelize));
 
   await Promise.all(sync);
@@ -50,6 +51,24 @@ const initModels = async (sequelize: Sequelize) => {
     through: Reading,
     foreignKey: 'blogId',
     as: 'readers',
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+    hooks: true,
+  });
+
+  User.belongsToMany(Blog, {
+    through: Like,
+    foreignKey: 'userId',
+    as: 'likings',
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+    hooks: true,
+  });
+
+  Blog.belongsToMany(User, {
+    through: Like,
+    foreignKey: 'blogId',
+    as: 'likers',
     onDelete: 'cascade',
     onUpdate: 'cascade',
     hooks: true,

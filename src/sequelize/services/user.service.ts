@@ -19,25 +19,30 @@ const defaultQueryOptions = {
   },
 };
 
-const singleQueryOptions = {
-  ...defaultQueryOptions,
-  include: [
-    {
-      model: Blog,
-      as: 'blogs',
-      attributes: {
-        exclude: ['ownerId', 'createdAt', 'updatedAt'],
-      },
+const includes = {
+  blogs: {
+    model: Blog,
+    as: 'blogs',
+    attributes: {
+      exclude: ['ownerId', 'createdAt', 'updatedAt'],
     },
-    {
-      model: Blog,
-      as: 'readings',
-      attributes: {
-        exclude: ['ownerId', 'createdAt', 'updatedAt'],
-      },
-      through: { attributes: ['read', 'id'] },
+  },
+  readings: {
+    model: Blog,
+    as: 'readings',
+    attributes: {
+      exclude: ['ownerId', 'createdAt', 'updatedAt'],
     },
-  ],
+    through: { attributes: ['read', 'id'] },
+  },
+  likings: {
+    model: Blog,
+    as: 'likings',
+    attributes: {
+      exclude: ['ownerId', 'createdAt', 'updatedAt'],
+    },
+    through: { attributes: ['id'] },
+  },
 };
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -73,27 +78,19 @@ const getById = async (id: string, query: UserQuery): Promise<UserOrNothing> => 
   return await User.findByPk(id, {
     ...defaultQueryOptions,
     include: [
-      {
-        model: Blog,
-        as: 'blogs',
-        attributes: {
-          exclude: ['ownerId', 'createdAt', 'updatedAt'],
-        },
-      },
-      {
-        model: Blog,
-        as: 'readings',
-        attributes: {
-          exclude: ['ownerId', 'createdAt', 'updatedAt'],
-        },
-        through: { attributes: ['read', 'id'], ...whereReadings },
-      },
+      includes.blogs,
+      includes.likings,
+      { ...includes.readings, through: { attributes: ['read', 'id'], ...whereReadings } },
     ],
   });
 };
 
 const getByUsername = async (username: string): Promise<UserOrNothing> => {
-  return await User.findOne({ ...singleQueryOptions, where: { username } });
+  return await User.findOne({
+    ...defaultQueryOptions,
+    include: [includes.blogs, includes.likings, includes.readings],
+    where: { username },
+  });
 };
 
 const updateOneAsUser = async (user: User, updateFields: UserUpdateAsUserInput): Promise<User> => {

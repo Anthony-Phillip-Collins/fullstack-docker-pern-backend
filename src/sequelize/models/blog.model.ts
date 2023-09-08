@@ -20,8 +20,9 @@ import {
 
 import { BlogAttributes, BlogCreation } from '../../types/blog.type';
 import { UserAttributes } from '../../types/user.type';
-import User from './user.model';
+import Like from './like.model';
 import Reading from './reading.model';
+import User from './user.model';
 
 export type BlogOrNothing = Blog | null | undefined;
 
@@ -35,7 +36,6 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   declare createdAt?: Date;
   declare updatedAt?: Date;
   declare ownerId: ForeignKey<UserAttributes['id']>;
-  declare readerCount?: NonAttribute<number>;
 
   declare owner?: NonAttribute<User>;
 
@@ -51,8 +51,21 @@ class Blog extends Model<BlogAttributes, BlogCreation> {
   declare countReaders: HasManyCountAssociationsMixin;
   declare createReader: HasManyCreateAssociationMixin<Reading, 'blogId'>;
 
+  declare likers?: NonAttribute<Like[]>;
+  declare getLikers: HasManyGetAssociationsMixin<Like>;
+  declare addLiker: HasManyAddAssociationMixin<Like, number>;
+  declare addLikers: HasManyAddAssociationsMixin<Like, number>;
+  declare setLikers: HasManySetAssociationsMixin<Like, number>;
+  declare removeLiker: HasManyRemoveAssociationMixin<Like, number>;
+  declare removeLikers: HasManyRemoveAssociationsMixin<Like, number>;
+  declare hasLiker: HasManyHasAssociationMixin<Like, number>;
+  declare hasLikers: HasManyHasAssociationsMixin<Like, number>;
+  declare countLikers: HasManyCountAssociationsMixin;
+  declare createLiker: HasManyCreateAssociationMixin<Like, 'blogId'>;
+
   declare static associations: {
     readers: Association<Blog, Reading>;
+    likers: Association<Blog, Like>;
   };
 }
 

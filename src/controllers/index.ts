@@ -1,11 +1,12 @@
 import { Express } from 'express';
-import baseRouter from './base.router';
-import blogRouter from './blog.router';
-import userRouter from './user.router';
+import { API_BASE_URL } from '../config';
 import authRouter from './auth.router';
 import authorRouter from './author.router';
+import baseRouter from './base.router';
+import blogRouter from './blog.router';
+import likeRouter from './likes.router';
 import readingRouter from './reading.router';
-import { API_BASE_URL } from '../config';
+import userRouter from './user.router';
 
 const api = API_BASE_URL;
 
@@ -14,6 +15,7 @@ export const paths = {
   users: `${api}/users`,
   authors: `${api}/authors`,
   readings: `${api}/readings`,
+  likes: `${api}/likes`,
   auth: `${api}/auth`,
 };
 
@@ -23,6 +25,7 @@ const init = (app: Express) => {
   app.use(paths.users, userRouter);
   app.use(paths.authors, authorRouter);
   app.use(paths.readings, readingRouter);
+  app.use(paths.likes, likeRouter);
   app.use(paths.auth, authRouter);
 };
 
