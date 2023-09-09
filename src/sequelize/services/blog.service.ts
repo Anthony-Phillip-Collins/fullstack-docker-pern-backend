@@ -57,7 +57,7 @@ const getAll = async (query: BlogQuery = {}): Promise<Blog[]> => {
 
   const blogs = await Blog.findAll({
     include: options.getAll.include,
-    order: [['id', 'DESC']],
+    order: [['likes', 'DESC']],
     attributes: options.getAll.attributes,
     where,
   });
