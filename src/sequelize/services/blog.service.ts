@@ -115,6 +115,9 @@ const deleteOne = async (blog: Blog, user: User): Promise<void> => {
   const readers = await blog.getReaders();
   await blog.removeReaders(readers);
 
+  const likers = await blog.getLikers();
+  await blog.removeLikers(likers);
+
   await Blog.destroy({ where: { id: blog.id } });
 };
 
