@@ -5,7 +5,8 @@ https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/
 
 ## Local development
 
-To run the full project locally visit the [parent project](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/) and follow the instructions of the [README.md](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/blob/main/README.md).
+To run the full project locally visit the [parent project](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/) and follow the instructions of the [README.md](https://github.com/Anthony-Phillip-Collins/fullstack-docker-pern/blob/main/README.md).  
+Once the project is up and running you can test the all endpoints with [Postman](https://www.postman.com/) by importing _postman-collection.json_.
 
 ## Deploy to Heroku
 
